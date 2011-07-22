@@ -2,5 +2,8 @@ roadmap.txt
 dist/
 build/
 nbproject/private/
+scripts/*.csv
+scripts/*[0-9]
+
 
 
