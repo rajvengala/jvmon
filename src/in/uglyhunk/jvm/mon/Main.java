@@ -52,7 +52,7 @@ public class Main {
             logger.log(Level.INFO, "Monitoring in progres...");
 
             if (!quietMode) {
-                co = new ConsoleOutputFormat();
+                co = new ConsoleOutputFormat(consoleSubSystem);
             }
 
             while (true) {
@@ -74,7 +74,6 @@ public class Main {
             }
         } catch (NumberFormatException nfe) {
             logger.log(Level.SEVERE, nfe.toString(), nfe);
-            Help.printUsage();
             System.exit(1);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
@@ -89,32 +88,47 @@ public class Main {
         logger.log(Level.FINE, "Arguments - {0}", argsSize);
         
         if ((argsSize > 5) || ((argsSize > 2) && (argsSize < 5))) {
-            logger.log(Level.INFO, "Incorrect number of arguments");
-            Help.printUsage();
+            logger.severe("Incorrect number of arguments");
             System.exit(0);
         }
 
         if (argsSize == 5) {
-            if (args[0].equalsIgnoreCase("b")) {
-                quietMode = false;
-            } else if (!args[0].equalsIgnoreCase("f")) {
-                logger.log(Level.INFO, "Invalid argument(s)");
-                Help.printUsage();
+            // process arg1
+            String[] options = args[0].split(":");
+            if(options.length <= 2) {
+                if (options[0].equalsIgnoreCase("b")) {
+                    quietMode = false;
+                } else if(!options[0].equalsIgnoreCase("f")) {
+                    logger.severe("Invalid argument, options should be \'b\' or \'f\'");
+                    System.exit(0);
+                }
+                if(options[1].length() == 1) {
+                    consoleSubSystem = options[1];
+                } else {
+                    logger.severe("Invalid argument, console_subsystem should be one of \'m\', \'c\', \'t\'");
+                    System.exit(0);
+                }
+            } else { 
+                logger.severe("Invalid first argument");
                 System.exit(0);
             }
-
+            
+            // process arg2
             int arg1 = Integer.parseInt(args[1]);
             if (arg1 > 0) {
                 updateFrequency = arg1 * 1000;
             }
 
+            // process arg3
             int arg2 = Integer.parseInt(args[2]);
             if (arg2 > 0) {
                 updateLimit = arg2;
             }
 
+            // process arg4
             targetVMDesc = args[3];
 
+            // process arg5
             int arg4 = Integer.parseInt(args[4]);
             if (arg4 > 0) {
                 vmScanFrequency = arg4 * 1000;
@@ -127,8 +141,7 @@ public class Main {
             RunningJVMs.printList();
             System.exit(0);
         } else {
-            logger.log(Level.INFO, "Invalid argument(s)");
-            Help.printUsage();
+            logger.severe("argument to query should be \'q\'");
             System.exit(0);
         }
 
@@ -146,7 +159,7 @@ public class Main {
         
         consoleHandler = new ConsoleHandler();
         // set this to INFO in production
-        consoleHandler.setLevel(Level.INFO); 
+        consoleHandler.setLevel(Level.FINE); 
         logger.addHandler(consoleHandler);
         
         String userDir = System.getProperty("user.dir");
@@ -178,4 +191,5 @@ public class Main {
     private static long dayInMSec = 86400 * 1000;
     private static final int MAX_BYTES = 500 * 1024; // 500 KB
     private static final int MAX_FILES = 10;
+    private static String consoleSubSystem = "h";
 }
