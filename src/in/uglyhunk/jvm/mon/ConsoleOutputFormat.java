@@ -45,7 +45,8 @@ public class ConsoleOutputFormat implements OutputFormat {
             int totalCounters = counters.length;
             
             System.out.println();
-            System.out.printf(rowPrefixFormat, counters[0], counters[1]);
+            String timestamp[] = counters[0].split(" ");
+            System.out.printf(rowPrefixFormat, timestamp[1], counters[1]);
 
             if(subSystem.equalsIgnoreCase("m")){
 

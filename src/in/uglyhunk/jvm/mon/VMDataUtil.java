@@ -24,7 +24,7 @@ public class VMDataUtil {
         mxBeanStoreLock.lock();
         StringBuilder outputBuilder = new StringBuilder();
         try {
-            String snapshotTime = new SimpleDateFormat("HH:mm:ss").format(new Date());
+            String snapshotTime = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
             String vmIds = getVmIds();
             if (vmIds != null) {
                 String memMXBeanData = memMXBeanDataUtil();
