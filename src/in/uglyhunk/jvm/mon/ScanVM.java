@@ -18,6 +18,10 @@ import javax.management.remote.JMXServiceURL;
 
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
+import java.lang.management.CompilationMXBean;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.MemoryPoolMXBean;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class ScanVM extends TimerTask {
@@ -32,6 +36,9 @@ public class ScanVM extends TimerTask {
             HashMap<Integer, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
             HashMap<Integer, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
             HashMap<Integer, ThreadMXBean> threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
+            HashMap<Integer, CompilationMXBean> compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
+            HashMap<Integer, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
+            HashMap<Integer, ArrayList<MemoryPoolMXBean>> memPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
 
             List<VirtualMachineDescriptor> vmDescs = VirtualMachine.list();
 
@@ -60,21 +67,52 @@ public class ScanVM extends TimerTask {
                                 JMXConnector connector = JMXConnectorFactory.connect(serviceURL);
                                 MBeanServerConnection mbsc = connector.getMBeanServerConnection();
 
+                                // memory bean
                                 ObjectName memoryMXObject = new ObjectName(ManagementFactory.MEMORY_MXBEAN_NAME);
                                 MemoryMXBean memoryMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         memoryMXObject.toString(), MemoryMXBean.class);
-
+                                memoryMXBeanMap.put(vmId, memoryMXBean);
+                                
+                                // class bean
                                 ObjectName classLoadingMXObject = new ObjectName(ManagementFactory.CLASS_LOADING_MXBEAN_NAME);
                                 ClassLoadingMXBean classLoadingMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         classLoadingMXObject.toString(), ClassLoadingMXBean.class);
+                                classLoadingMXBeanMap.put(vmId, classLoadingMXBean);
 
+                                // thread bean
                                 ObjectName threadMXObject = new ObjectName(ManagementFactory.THREAD_MXBEAN_NAME);
                                 ThreadMXBean threadMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         threadMXObject.toString(), ThreadMXBean.class);
-
-                                memoryMXBeanMap.put(vmId, memoryMXBean);
-                                classLoadingMXBeanMap.put(vmId, classLoadingMXBean);
                                 threadMXBeanMap.put(vmId, threadMXBean);
+                                
+                                // compilation bean
+                                ObjectName compilationMXObject = new ObjectName(ManagementFactory.COMPILATION_MXBEAN_NAME);
+                                CompilationMXBean compilationMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc, 
+                                         compilationMXObject.toString(), CompilationMXBean.class);
+                                compilationMXBeanMap.put(vmId, compilationMXBean);
+                                
+                                // gc bean
+                                ObjectName gcObjectNames = new ObjectName(ManagementFactory.GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE + ",*");
+                                ArrayList<GarbageCollectorMXBean> gcMXBeanList = new ArrayList<GarbageCollectorMXBean>();
+                                for (ObjectName gcMXObject : mbsc.queryNames(gcObjectNames, null)) {
+                                        GarbageCollectorMXBean gcMXBean = ManagementFactory.newPlatformMXBeanProxy(
+                                                            mbsc, gcMXObject.getCanonicalName(), GarbageCollectorMXBean.class); 
+                                        Main.logger.fine(gcMXBean.getName());
+                                        gcMXBeanList.add(gcMXBean);
+                                }
+                                gcMXBeanMap.put(vmId, gcMXBeanList);
+                                
+                                // memory pool bean
+                                ArrayList<MemoryPoolMXBean> memPoolMXBeanList = new ArrayList<MemoryPoolMXBean>();
+                                ObjectName memPoolObjectNames = new ObjectName(ManagementFactory.MEMORY_POOL_MXBEAN_DOMAIN_TYPE + ",*");
+                                for (ObjectName memPoolMXObject : mbsc.queryNames(memPoolObjectNames, null)) {
+                                    MemoryPoolMXBean memPoolMXBean = ManagementFactory.newPlatformMXBeanProxy(
+                                                                mbsc, memPoolMXObject.getCanonicalName(), MemoryPoolMXBean.class); 
+                                
+                                    Main.logger.fine(memPoolMXBean.getName());
+                                    memPoolMXBeanList.add(memPoolMXBean);
+                                }
+                                memPoolMXBeanMap.put(vmId, memPoolMXBeanList);
                             }
                         }
                     }
@@ -88,6 +126,7 @@ public class ScanVM extends TimerTask {
             Main.logger.log(Level.FINE, e.toString(), e);
         }
     }
+    
     private String targetVMDescs[] = null;
     private String localVMDesc = "in.uglyhunk.jvm.mon.Main";
 }

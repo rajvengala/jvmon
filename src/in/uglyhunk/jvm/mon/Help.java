@@ -18,7 +18,8 @@ public class Help {
                            "        m - memory (heap + non-heap)" + newline +
                            "        t - threads" + newline +
                            "        c - classes" + newline +
-                           "        g - garbage collection" + newline +
+                           "        n - compilation " + newline +
+                           "        o - garbage collection and memory pools" + newline +
                            "        defaults to memory if console_output is omitted" + newline + newline +
                            " frequency - metrics ready frequency" + newline + newline +
                            " num_of_updates - number of readings" + newline + newline +

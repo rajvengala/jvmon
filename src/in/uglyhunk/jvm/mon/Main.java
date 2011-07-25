@@ -30,10 +30,9 @@ public class Main {
 
             Date date = new Date();
             String timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(date);
+            
             FileOutputFormat.createCSVFile(timestamp);
 
-            logger.log(Level.INFO, "CSV file location - {0}", FileOutputFormat.getCSVFilePath());
-            
             // initialise VM scanner thread
             new Timer().schedule(new ScanVM(targetVMDesc), 500, vmScanFrequency);
             
@@ -52,7 +51,7 @@ public class Main {
             logger.log(Level.INFO, "Monitoring in progres...");
 
             if (!quietMode) {
-                co = new ConsoleOutputFormat(consoleSubSystem);
+                co = new ConsoleOutputFormat(consoleVMSubSystem);
             }
 
             while (true) {
@@ -102,15 +101,14 @@ public class Main {
                     logger.severe("Invalid argument, options should be \'b\' or \'f\'");
                     System.exit(0);
                 }
+            }
+            if(options.length == 2){
                 if(options[1].length() == 1) {
-                    consoleSubSystem = options[1];
+                    consoleVMSubSystem = options[1];
                 } else {
-                    logger.severe("Invalid argument, console_subsystem should be one of \'m\', \'c\', \'t\'");
+                    logger.severe("Invalid argument, console_subsystem should be one of \'m\', \'c\', \'t\', \'n\', \'o\'");
                     System.exit(0);
                 }
-            } else { 
-                logger.severe("Invalid first argument");
-                System.exit(0);
             }
             
             // process arg2
@@ -155,7 +153,7 @@ public class Main {
                
         logger.setUseParentHandlers(false);
         // set this to INFO in production
-        logger.setLevel(Level.FINE);
+        logger.setLevel(Level.INFO);
         
         consoleHandler = new ConsoleHandler();
         // set this to INFO in production
@@ -165,7 +163,7 @@ public class Main {
         String userDir = System.getProperty("user.dir");
         logger.log(Level.FINE, "user.dir - {0}", userDir);
          try{
-            fileHandler = new FileHandler(userDir + "/jvmon_err_%u.log", MAX_BYTES, MAX_FILES);
+            fileHandler = new FileHandler(userDir + "/jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
         } catch(Exception e){
             logger.severe(e.toString());
             System.exit(1);
@@ -187,9 +185,9 @@ public class Main {
     private static long vmScanFrequency = 30 * 1000; // milliseconds
     private static int updateCounter = 1;
     private static FileOutputFormat fo = new FileOutputFormat();
-    private static ConsoleOutputFormat co = null;
+    private static ConsoleOutputFormat co;
     private static long dayInMSec = 86400 * 1000;
     private static final int MAX_BYTES = 500 * 1024; // 500 KB
-    private static final int MAX_FILES = 10;
-    private static String consoleSubSystem = "h";
+    private static final int MAX_FILES = 10; // max log file count
+    private static String consoleVMSubSystem = "h"; // heap counters by default
 }
