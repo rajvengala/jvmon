@@ -32,6 +32,7 @@ public class ScanVM extends TimerTask {
 
     @Override
     public void run() {
+
         try {
             HashMap<Integer, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
             HashMap<Integer, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
@@ -97,7 +98,6 @@ public class ScanVM extends TimerTask {
                                 for (ObjectName gcMXObject : mbsc.queryNames(gcObjectNames, null)) {
                                         GarbageCollectorMXBean gcMXBean = ManagementFactory.newPlatformMXBeanProxy(
                                                             mbsc, gcMXObject.getCanonicalName(), GarbageCollectorMXBean.class); 
-                                        Main.logger.fine(gcMXBean.getName());
                                         gcMXBeanList.add(gcMXBean);
                                 }
                                 gcMXBeanMap.put(vmId, gcMXBeanList);
@@ -109,7 +109,6 @@ public class ScanVM extends TimerTask {
                                     MemoryPoolMXBean memPoolMXBean = ManagementFactory.newPlatformMXBeanProxy(
                                                                 mbsc, memPoolMXObject.getCanonicalName(), MemoryPoolMXBean.class); 
                                 
-                                    Main.logger.fine(memPoolMXBean.getName());
                                     memPoolMXBeanList.add(memPoolMXBean);
                                 }
                                 memPoolMXBeanMap.put(vmId, memPoolMXBeanList);
@@ -125,6 +124,7 @@ public class ScanVM extends TimerTask {
             Main.logger.info("Could not connect to target VM(s). Please check the log file for details");
             Main.logger.log(Level.FINE, e.toString(), e);
         }
+    
     }
     
     private String targetVMDescs[] = null;

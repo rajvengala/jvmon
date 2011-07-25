@@ -9,6 +9,7 @@ public class FileOutputFormat implements OutputFormat {
 
     @Override
     public void writeOutput(String output) {
+        
         try {
             if (LogRotator.getCSVLogFlag()) {
                 createCSVFile(LogRotator.getNewTimeStamp());
@@ -23,27 +24,28 @@ public class FileOutputFormat implements OutputFormat {
             Main.logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
+       
     }
 
     public static void createCSVFile(String timestamp) {
+       
         try {
-            File curDir = new File(".");
-            String fileName = File.separator + "jvmon_" + timestamp + ".csv";
-            csvRelFileLoc = curDir + fileName;
-            csvLogFile = new PrintWriter(new FileWriter(csvRelFileLoc), true);
-            
-            Main.logger.log(Level.INFO, "CSV file location - {0}", curDir.getCanonicalPath() + fileName);
+            csvFileLoc = System.getProperty("user.dir") + File.separator + "jvmon_" + timestamp + ".csv";
+            csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
+            Main.logger.info("========================================");
+            Main.logger.log(Level.INFO, "CSV file location - {0}", csvFileLoc);
+            Main.logger.info("========================================");
             csvLogFile.println(header);
-            
-            
+      
         } catch (Exception e) {
             Main.logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
+       
     }
 
     private static PrintWriter csvLogFile = null;
-    private static String csvRelFileLoc;
+    private static String csvFileLoc;
     private static String header = "timestamp,proc_id," + 
                                     "used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)," +
                                     "curr_loaded_classes,tot_loaded_classes,tot_unloaded_classes," + 

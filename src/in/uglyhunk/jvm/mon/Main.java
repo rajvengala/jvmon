@@ -25,12 +25,12 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
+      
             createHandlers();
             validateArgs(args);
 
             Date date = new Date();
             String timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(date);
-            
             FileOutputFormat.createCSVFile(timestamp);
 
             // initialise VM scanner thread
@@ -43,6 +43,8 @@ public class Main {
             int minOfHour = calendar.get(Calendar.MINUTE);
             long initLogRotatorDelay = ((60 - minOfHour) + ((23 - hourOfDay) * 60)) * 60 * 1000;
             new Timer().scheduleAtFixedRate(new LogRotator(), initLogRotatorDelay, dayInMSec);
+            
+            logger.log(Level.FINE, "Next log rotator in {0} msec.", initLogRotatorDelay);
 
             while (MXBeanStore.getMemoryMXBeanMap().isEmpty()) {
                 logger.log(Level.INFO, "Searching for JVMs...");
@@ -79,12 +81,15 @@ public class Main {
             System.exit(1);
         }
         logger.log(Level.INFO, "Complete");
+      
         System.exit(0);
     }
 
     private static void validateArgs(String[] args) {
+      
+        
         int argsSize = args.length;
-        logger.log(Level.FINE, "Arguments - {0}", argsSize);
+        logger.log(Level.FINE, "Argument size - {0}", argsSize);
         
         if ((argsSize > 5) || ((argsSize > 2) && (argsSize < 5))) {
             logger.severe("Incorrect number of arguments");
@@ -147,23 +152,24 @@ public class Main {
             Help.printUsage();
             System.exit(0);
         }
+        
     }
     
     private static void createHandlers(){
-               
+        
         logger.setUseParentHandlers(false);
-        // set this to INFO in production
-        logger.setLevel(Level.INFO);
+        logger.setLevel(Level.FINE);
         
         consoleHandler = new ConsoleHandler();
-        // set this to INFO in production
-        consoleHandler.setLevel(Level.FINE); 
+        consoleHandler.setLevel(Level.INFO); 
         logger.addHandler(consoleHandler);
         
         String userDir = System.getProperty("user.dir");
-        logger.log(Level.FINE, "user.dir - {0}", userDir);
-         try{
+        try{
             fileHandler = new FileHandler(userDir + "/jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
+            logger.fine("========================================");
+            logger.log(Level.INFO, "user.dir - {0}", userDir);
+            logger.fine("========================================");
         } catch(Exception e){
             logger.severe(e.toString());
             System.exit(1);
@@ -173,6 +179,7 @@ public class Main {
         fileHandler.setLevel(Level.FINE);
         fileHandler.setFormatter(new SimpleFormatter());
         logger.addHandler(fileHandler);
+   
     }
     
     private static ConsoleHandler consoleHandler;
