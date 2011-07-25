@@ -3,6 +3,8 @@
  */
 package in.uglyhunk.jvm.mon;
 
+import java.io.File;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -164,12 +166,14 @@ public class Main {
         consoleHandler.setLevel(Level.INFO); 
         logger.addHandler(consoleHandler);
         
-        String userDir = System.getProperty("user.dir");
+        
         try{
-            fileHandler = new FileHandler(userDir + "/jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
-            logger.fine("========================================");
-            logger.log(Level.INFO, "user.dir - {0}", userDir);
-            logger.fine("========================================");
+            String hostname = InetAddress.getLocalHost().getHostName();
+            String userDir = System.getProperty("user.dir");
+            fileHandler = new FileHandler(userDir + File.separator + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
+            logger.info("========================================");
+            logger.log(Level.INFO, "Error log direcotry - {0}", userDir);
+            logger.info("========================================");
         } catch(Exception e){
             logger.severe(e.toString());
             System.exit(1);

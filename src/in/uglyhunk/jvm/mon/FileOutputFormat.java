@@ -3,6 +3,7 @@ package in.uglyhunk.jvm.mon;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.net.InetAddress;
 import java.util.logging.Level;
 
 public class FileOutputFormat implements OutputFormat {
@@ -30,7 +31,8 @@ public class FileOutputFormat implements OutputFormat {
     public static void createCSVFile(String timestamp) {
        
         try {
-            csvFileLoc = System.getProperty("user.dir") + File.separator + "jvmon_" + timestamp + ".csv";
+            String hostname = InetAddress.getLocalHost().getHostName();
+            csvFileLoc = System.getProperty("user.dir") + File.separator + hostname + "_jvmon_" + timestamp + ".csv";
             csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
             Main.logger.info("========================================");
             Main.logger.log(Level.INFO, "CSV file location - {0}", csvFileLoc);
