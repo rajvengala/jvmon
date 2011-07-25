@@ -4,7 +4,8 @@ jvmon is a command line tool to monitor jvm platform.
 Features:
 ===============
 
-+ Reports metrics related to heap memory, non-heap memory, threads, classes of the JVM platform (NOT for applications running inside JVM)
++ Reports metrics related to heap memory, non-heap memory, threads, classes, compilation, garbage collector, memory pools
+  of the JVM platform (NOT for applications running inside JVM)
 
 + Dynamically scans for new JVMs and gracefully handles dead JVMs
 
