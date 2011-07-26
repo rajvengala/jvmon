@@ -1,0 +1,13 @@
+v1.2.0
+======
+ + supports compilation, garbage collector and memory pool metrics
+
+v1.1.0
+=======
+ + console output now prints only select JVM sub-system metrics
+
+v1.0.0
+=======
+ + supports heap, non-heap, classes and threads metrics
+
+
