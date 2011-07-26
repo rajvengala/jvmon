@@ -65,7 +65,7 @@ public class VMDataUtil {
     }
 
     private static String getVmIds() {
-        HashMap<Integer, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
+        memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
         Iterator<Entry<Integer, MemoryMXBean>> itrMemoryMXBean = memoryMXBeanMap.entrySet().iterator();
 
         StringBuilder vmIdBuffer = new StringBuilder();
@@ -79,9 +79,9 @@ public class VMDataUtil {
     private static String memMXBeanDataUtil() {
         StringBuilder memMXBeanOutput = new StringBuilder();
 
-        HashMap<Integer, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
+        memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
         Iterator<Entry<Integer, MemoryMXBean>> itrMemoryMXBean = memoryMXBeanMap.entrySet().iterator();
-
+        
         while (itrMemoryMXBean.hasNext()) {
             Entry<Integer, MemoryMXBean> tempRow = itrMemoryMXBean.next();
             MemoryMXBean memMXBean = tempRow.getValue();
@@ -115,7 +115,7 @@ public class VMDataUtil {
     private static String classLoadingMXBeanDataUtil() {
         StringBuilder classLoadingMXBeanOutput = new StringBuilder();
 
-        HashMap<Integer, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
+        classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
         Iterator<Entry<Integer, ClassLoadingMXBean>> itrClassLoadingMXBean = classLoadingMXBeanMap.entrySet().iterator();
 
         while (itrClassLoadingMXBean.hasNext()) {
@@ -133,6 +133,9 @@ public class VMDataUtil {
             } catch (Exception e) {
                 classLoadingMXBeanOutput.append("0,0,0;");
                 itrClassLoadingMXBean.remove();
+                if(memoryMXBeanMap.containsKey(vmId)){
+                    memoryMXBeanMap.remove(vmId);
+                }
                 Main.logger.log(Level.FINE, e.toString(), e);
                 Main.logger.log(Level.FINE, "VM with proc_id{0} is dead while reading classLoading MX Beans", vmId);
             }
@@ -143,7 +146,7 @@ public class VMDataUtil {
     private static String threadMXBeanDataUtil() {
         StringBuilder threadMXBeanOutput = new StringBuilder();
 
-        HashMap<Integer, ThreadMXBean> threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
+        threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
         Iterator<Entry<Integer, ThreadMXBean>> itrThreadMXBean = threadMXBeanMap.entrySet().iterator();
 
         while (itrThreadMXBean.hasNext()) {
@@ -164,6 +167,14 @@ public class VMDataUtil {
             } catch (Exception e) {
                 threadMXBeanOutput.append("0,0,0,0;");
                 itrThreadMXBean.remove();
+                
+                if(memoryMXBeanMap.containsKey(vmId)){
+                    memoryMXBeanMap.remove(vmId);
+                }
+                if(classLoadingMXBeanMap.containsKey(vmId)){
+                    classLoadingMXBeanMap.remove(vmId);
+                }
+                
                 Main.logger.log(Level.FINE, e.toString(), e);
                 Main.logger.log(Level.FINE, "VM with proc_id{0} is dead while reading thread MX Beans", vmId);
             }
@@ -174,7 +185,7 @@ public class VMDataUtil {
     private static String compilationMXBeanDataUtil() {
         StringBuilder compilationMXBeanOutput = new StringBuilder();
         
-        HashMap<Integer, CompilationMXBean> compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
+        compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
         Iterator<Entry<Integer, CompilationMXBean>> itrCompilationMXBean = compilationMXBeanMap.entrySet().iterator();
 
         while (itrCompilationMXBean.hasNext()) {
@@ -187,6 +198,16 @@ public class VMDataUtil {
             } catch(Exception e){
                 compilationMXBeanOutput.append("0;");
                 itrCompilationMXBean.remove();
+                
+                if(memoryMXBeanMap.containsKey(vmId)){
+                    memoryMXBeanMap.remove(vmId);
+                }
+                if(classLoadingMXBeanMap.containsKey(vmId)){
+                    classLoadingMXBeanMap.remove(vmId);
+                }
+                if(threadMXBeanMap.containsKey(vmId)){
+                    threadMXBeanMap.remove(vmId);
+                }
                 Main.logger.log(Level.FINE, e.toString(), e);
                 Main.logger.log(Level.FINE, "VM with proc_id{0} is dead while reading compilation MX Beans", vmId);
             }
@@ -197,7 +218,7 @@ public class VMDataUtil {
     private static String gcMXBeanDataUtil() {
         StringBuilder gcMXBeanOutput = new StringBuilder();
         
-        HashMap<Integer, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
+        gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
         Iterator<Entry<Integer, ArrayList<GarbageCollectorMXBean>>> itrGCMXBean = gcMXBeanMap.entrySet().iterator();
         
         while (itrGCMXBean.hasNext()) {
@@ -221,15 +242,28 @@ public class VMDataUtil {
                 }
                 gcMXBeanOutput.append(";");
             } catch (Exception e){
-                gcMXBeanOutput = new StringBuilder();
-                int counter = 0;
+                int counter = 1;
                 gcMXBeanOutput.append("0");
-                while(counter < gcFieldCount-1){
+                while(counter < gcFieldCount){
                     gcMXBeanOutput.append(",0");
                     counter++;
                 }
                 gcMXBeanOutput.append(";");
                 itrGCMXBean.remove();
+                
+                if(memoryMXBeanMap.containsKey(vmId)){
+                    memoryMXBeanMap.remove(vmId);
+                }
+                if(classLoadingMXBeanMap.containsKey(vmId)){
+                    classLoadingMXBeanMap.remove(vmId);
+                }
+                if(threadMXBeanMap.containsKey(vmId)){
+                    threadMXBeanMap.remove(vmId);
+                }
+                if(compilationMXBeanMap.containsKey(vmId)){
+                    compilationMXBeanMap.remove(vmId);
+                }
+                
                 Main.logger.log(Level.FINE, e.toString(), e);
                 Main.logger.log(Level.FINE, "VM with proc_id{0} is dead while reading GC MX Beans", vmId);
             }
@@ -266,16 +300,32 @@ public class VMDataUtil {
                 }
                 memPoolMXBeanOutput.append(";");
             } catch(Exception e){
-                memPoolMXBeanOutput = new StringBuilder();
-                int counter = 0;
+                int counter = 1;
                 memPoolMXBeanOutput.append("0");
-                while(counter < memPoolFieldCount-1){
+                while(counter < memPoolFieldCount){
                     memPoolMXBeanOutput.append(",0");
                     counter++;
                 }
                 memPoolMXBeanOutput.append(";");
                 
                 itrMemPoolMXBean.remove();
+                
+                
+                if(memoryMXBeanMap.containsKey(vmId)){
+                    memoryMXBeanMap.remove(vmId);
+                }
+                if(classLoadingMXBeanMap.containsKey(vmId)){
+                    classLoadingMXBeanMap.remove(vmId);
+                }
+                if(threadMXBeanMap.containsKey(vmId)){
+                    threadMXBeanMap.remove(vmId);
+                }
+                if(compilationMXBeanMap.containsKey(vmId)){
+                    compilationMXBeanMap.remove(vmId);
+                }
+                if(gcMXBeanMap.containsKey(vmId)){
+                    gcMXBeanMap.remove(vmId);
+                }
                 Main.logger.log(Level.FINE, e.toString(), e);
                 Main.logger.log(Level.FINE, "VM with proc_id{0} is dead while reading MemoryPool MX Beans", vmId);
             }
@@ -283,4 +333,11 @@ public class VMDataUtil {
         return (memPoolMXBeanOutput.length() == 0 ? null : memPoolMXBeanOutput.toString());
     }
 
+    
+   private static HashMap<Integer, MemoryMXBean> memoryMXBeanMap;
+   private static HashMap<Integer, ClassLoadingMXBean> classLoadingMXBeanMap;
+   private static HashMap<Integer, ThreadMXBean> threadMXBeanMap;
+   private static HashMap<Integer, CompilationMXBean> compilationMXBeanMap; 
+   private static HashMap<Integer, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap;
+   private static HashMap<Integer, ArrayList<MemoryPoolMXBean>> memoryPoolMXBeanMap;  
 }
