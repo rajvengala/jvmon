@@ -169,11 +169,10 @@ public class Main {
         
         try{
             String hostname = InetAddress.getLocalHost().getHostName();
-            String userDir = System.getProperty("user.dir");
-            fileHandler = new FileHandler(userDir + File.separator + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
-            logger.info("========================================");
-            logger.log(Level.INFO, "Error log direcotry - {0}", userDir);
-            logger.info("========================================");
+            String errLogFileDir = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + File.separator;
+            fileHandler = new FileHandler(errLogFileDir + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
+            System.out.println("Error log directory - " + errLogFileDir);
+            
         } catch(Exception e){
             logger.severe(e.toString());
             System.exit(1);

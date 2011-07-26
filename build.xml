@@ -16,8 +16,8 @@
         <delete dir="${dist.dir}/lib" />
         
         <mkdir dir="${dist.dir}/jvmon" />
-        <mkdir dir="${dist.dir}/jvmon/bin" />
         <mkdir dir="${dist.dir}/jvmon/logs" />
+        <mkdir dir="${dist.dir}/jvmon/bin" />
         <mkdir dir="${dist.dir}/jvmon/lib" />
         
         <move file="${dist.dir}/jvmon.jar" todir="${dist.dir}/jvmon/lib" />

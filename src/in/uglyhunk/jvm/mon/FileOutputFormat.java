@@ -32,11 +32,9 @@ public class FileOutputFormat implements OutputFormat {
        
         try {
             String hostname = InetAddress.getLocalHost().getHostName();
-            csvFileLoc = System.getProperty("user.dir") + File.separator + hostname + "_jvmon_" + timestamp + ".csv";
+            csvFileLoc = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + File.separator + hostname + "_jvmon_" + timestamp + ".csv";
             csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
-            Main.logger.info("========================================");
-            Main.logger.log(Level.INFO, "CSV file location - {0}", csvFileLoc);
-            Main.logger.info("========================================");
+            System.out.println("CSV file location - " + csvFileLoc);
             csvLogFile.println(header);
       
         } catch (Exception e) {
