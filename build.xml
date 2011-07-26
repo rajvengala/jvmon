@@ -24,6 +24,7 @@
         <copy todir="${dist.dir}/jvmon/bin">
             <fileset dir="scripts"/>
         </copy>
+        <copy overwrite="true" tofile="${dist.dir}/README.TXT" file="readme.txt"/>
         <copy overwrite="true" tofile="${dist.dir}/jvmon/readme.txt" file="readme.txt"/>
         <copy overwrite="true" tofile="${dist.dir}/jvmon/changelog.txt" file="changelog.txt"/>
         <copy overwrite="true" tofile="${dist.dir}/jvmon/help.txt" file="help.txt"/>
