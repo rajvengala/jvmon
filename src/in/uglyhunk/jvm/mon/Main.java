@@ -33,7 +33,7 @@ public class Main {
 
             Date date = new Date();
             String timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(date);
-            FileOutputFormat.createCSVFile(timestamp);
+            String csvFilePath = FileOutputFormat.createCSVFile(timestamp);
 
             // initialise VM scanner thread
             new Timer().schedule(new ScanVM(targetVMDesc), 500, vmScanFrequency);
@@ -75,6 +75,10 @@ public class Main {
 
                 Thread.sleep(updateFrequency);
             }
+            
+            // convert csv file to js for graphing
+            CSV2JS.convert(csvFilePath);
+            
         } catch (NumberFormatException nfe) {
             logger.log(Level.SEVERE, nfe.toString(), nfe);
             System.exit(1);
@@ -82,8 +86,9 @@ public class Main {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
+        
+        
         logger.log(Level.INFO, "Complete");
-      
         System.exit(0);
     }
 

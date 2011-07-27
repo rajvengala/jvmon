@@ -222,6 +222,7 @@ public class VMDataUtil {
         Iterator<Entry<Integer, ArrayList<GarbageCollectorMXBean>>> itrGCMXBean = gcMXBeanMap.entrySet().iterator();
         
         while (itrGCMXBean.hasNext()) {
+            gcMXBeanOutput.append(" ");
             Entry<Integer, ArrayList<GarbageCollectorMXBean>> tempRow = itrGCMXBean.next();
             Integer vmId = tempRow.getKey();
             ArrayList<GarbageCollectorMXBean> gcBeanList = tempRow.getValue();
@@ -275,10 +276,11 @@ public class VMDataUtil {
     private static String memPoolMXBeanDataUtil() {
         StringBuilder memPoolMXBeanOutput = new StringBuilder();
         
-        HashMap<Integer, ArrayList<MemoryPoolMXBean>> memoryPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
+        memoryPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
         Iterator<Entry<Integer, ArrayList<MemoryPoolMXBean>>> itrMemPoolMXBean = memoryPoolMXBeanMap.entrySet().iterator();
         
         while (itrMemPoolMXBean.hasNext()) {
+            memPoolMXBeanOutput.append(" ");
             Entry<Integer, ArrayList<MemoryPoolMXBean>> tempRow = itrMemPoolMXBean.next();
             Integer vmId = tempRow.getKey();
             ArrayList<MemoryPoolMXBean> memPoolBeanList = tempRow.getValue();

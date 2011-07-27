@@ -28,7 +28,7 @@ public class FileOutputFormat implements OutputFormat {
        
     }
 
-    public static void createCSVFile(String timestamp) {
+    public static String createCSVFile(String timestamp) {
        
         try {
             String hostname = InetAddress.getLocalHost().getHostName();
@@ -42,6 +42,7 @@ public class FileOutputFormat implements OutputFormat {
             System.exit(1);
         }
        
+        return csvFileLoc;
     }
 
     private static PrintWriter csvLogFile = null;
