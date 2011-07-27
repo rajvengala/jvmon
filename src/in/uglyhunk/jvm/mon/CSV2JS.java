@@ -94,7 +94,7 @@ public class CSV2JS {
             String procIdMetrics[] = procsToMetricsMap.get(procId).toString().split(";");
                      
             func.append("function _").append(procId).append("Mem() {\nreturn \"\" + \n");
-            func.append("\"timestamp,used_heap(MB),comm_heap(MB)\\n\" + \n");
+            func.append("\"timestamp,used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)\\n\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){
                 String metrics[] = procIdMetrics[line].split(",");
                 func.append("\"").append(metrics[0]).append(",").append(metrics[2]).append(",").append(metrics[3]).append(",").
