@@ -24,7 +24,7 @@ public class CSV2JS {
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
-        System.out.print("Done.");
+        System.out.println("Done");
         Main.logger.fine("Conversion done");
     }
     
@@ -79,7 +79,7 @@ public class CSV2JS {
         Iterator<Entry<String, StringBuilder>> itrProcsToMetricsMap = procsToMetricsMap.entrySet().iterator();
         while(true){
             Entry<String, StringBuilder> itr = itrProcsToMetricsMap.next();
-            func.append(itr.getKey());
+            func.append("_").append(itr.getKey());
             if(itrProcsToMetricsMap.hasNext()) 
                 func.append(",");
             else
