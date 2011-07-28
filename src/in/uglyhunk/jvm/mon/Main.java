@@ -79,22 +79,18 @@ public class Main {
             // convert csv file to js for graphing
             CSV2JS.convert(csvFilePath);
             
-        } catch (NumberFormatException nfe) {
-            logger.log(Level.SEVERE, nfe.toString(), nfe);
-            System.exit(1);
+      
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
-        
-        
+                
         logger.log(Level.INFO, "Complete");
         System.exit(0);
     }
 
-    private static void validateArgs(String[] args) {
-      
-        
+    private static void validateArgs(String[] args) throws Exception {
+              
         int argsSize = args.length;
         logger.log(Level.FINE, "Argument size - {0}", argsSize);
         
@@ -147,13 +143,25 @@ public class Main {
             return;
         }
 
-        if ((argsSize == 1) && (args[0].equalsIgnoreCase("q"))) {
-            RunningJVMs.printList();
-            System.exit(0);
-        } else {
-            logger.severe("argument to query should be \'q\'");
-            System.exit(0);
+        if(argsSize == 1){
+            if(args[0].equalsIgnoreCase("q")){
+                RunningJVMs.printList();
+                System.exit(0);
+            } else {
+                logger.severe("Invalid argument, options should be \'b\' or \'f\' or \'c\'");
+                System.exit(0);
+            }
         }
+        
+        if (argsSize == 2) {
+            if(args[0].equalsIgnoreCase("c")) {
+                CSV2JS.convert(args[1]);
+                System.exit(0);
+            } else {
+                logger.severe("Incorrect number of arguments, you should provide CSV filename");
+                System.exit(0);
+            }
+        } 
 
         if (argsSize == 0) {
             Help.printUsage();

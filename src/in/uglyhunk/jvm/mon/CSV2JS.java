@@ -19,10 +19,13 @@ import java.util.Map.Entry;
 public class CSV2JS {
     
     public static void convert(String csvFilename) throws Exception {
-
+        Main.logger.fine("Converting CSV file to JS...");
+        System.out.print("Converting CSV file to JS...");
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
+        System.out.print("Done.");
+        Main.logger.fine("Conversion done");
     }
     
     private static void mapProcsToMetrics() throws Exception {
@@ -69,6 +72,7 @@ public class CSV2JS {
     }
     
     private static String createProcListFun(){
+        
         StringBuilder func = new StringBuilder();
         func.append("function _getProcList() {\nreturn \"\" + \n");
         func.append("\"");
@@ -289,11 +293,6 @@ public class CSV2JS {
         return func.toString();
     }  
    
-    
-    public static void main(String[] args) throws Exception {
-        convert("/home/uglyhunk/projects/jvmon/dist/jvmon/logs/fedora15-x64-lxde-vbox_jvmon_27_Jul_2011_12_40_35.csv");
-    }
-    
     private static String csvFilename;
     private static HashMap<String, StringBuilder> procsToMetricsMap = new HashMap<String, StringBuilder>();
 }

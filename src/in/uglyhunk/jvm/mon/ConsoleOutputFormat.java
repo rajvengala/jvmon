@@ -77,7 +77,7 @@ public class ConsoleOutputFormat implements OutputFormat {
     }
     private boolean firstTime = true;
     private static String subSystem;
-    private static final String rowPrefixFormat = "%-10s %-7s ";
+    private static final String rowPrefixFormat = "%-10s %-20s ";
     private static final String memHeaderFormat = "%-6s %-6s %-11s %-11s ";
     private static final String clasHeaderFormat = "%-12s %-12s %-13s ";
     private static final String thdHeaderFormat = "%-6s %-7s %-8s %-12s ";

@@ -7,14 +7,15 @@ public class Help {
     public static void printUsage() {
         
         System.out.println("Usage : " + newline + newline +
-                           " java -cp " + classPath + "<options>:{<console_output>} <frequency> <num_of_updates> <vmdesc1,...> <vmscan_rate>" + newline);
+                           " java -cp " + classPath + "<options>[:<jvm_subsystem>] [ {<frequency>|<jvmon_csv_file>} <num_of_updates> <vmdesc1,...> <vmscan_rate>]" + newline);
         
         System.out.println("where, " + newline +
                            " options - q/f/b" + newline +
                            "    q - list the running JVMs" + newline +
+                           "    c - convert jvmon csv report to js format" + newline +
                            "    f - output only to file" + newline +
                            "    b - output to console and file" + newline +
-                           "    console_output - m/t/c/g (console_output sub-switch will be ignored if options switch is \"q or f\")" + newline +
+                           "    jvm_subsystem - m/t/c/g (jvm_subsystem will be ignored if options switch is \"q or f or c\")" + newline +
                            "        m - memory (heap + non-heap)" + newline +
                            "        t - threads" + newline +
                            "        c - classes" + newline +

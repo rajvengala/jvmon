@@ -4,44 +4,29 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.net.InetAddress;
-import java.util.logging.Level;
 
 public class FileOutputFormat implements OutputFormat {
 
     @Override
-    public void writeOutput(String output) {
-        
-        try {
-            if (LogRotator.getCSVLogFlag()) {
-                createCSVFile(LogRotator.getNewTimeStamp());
-                LogRotator.setCSVLogFlag(false);
-            }
-            
-            String[] vmCounters = output.split(";");
-            for(String countersPerVM : vmCounters)
-                csvLogFile.println(countersPerVM);
-            
-        } catch (Exception e) {
-            Main.logger.log(Level.SEVERE, e.toString(), e);
-            System.exit(1);
+    public void writeOutput(String output) throws Exception{
+
+        if (LogRotator.getCSVLogFlag()) {
+            createCSVFile(LogRotator.getNewTimeStamp());
+            LogRotator.setCSVLogFlag(false);
         }
-       
+
+        String[] vmCounters = output.split(";");
+        for(String countersPerVM : vmCounters)
+            csvLogFile.println(countersPerVM);
     }
 
-    public static String createCSVFile(String timestamp) {
-       
-        try {
-            String hostname = InetAddress.getLocalHost().getHostName();
-            csvFileLoc = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + File.separator + hostname + "_jvmon_" + timestamp + ".csv";
-            csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
-            System.out.println("CSV file location - " + csvFileLoc);
-            csvLogFile.println(header);
-      
-        } catch (Exception e) {
-            Main.logger.log(Level.SEVERE, e.toString(), e);
-            System.exit(1);
-        }
-       
+    public static String createCSVFile(String timestamp) throws Exception {
+        
+        String hostname = InetAddress.getLocalHost().getHostName();
+        csvFileLoc = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + File.separator + hostname + "_jvmon_" + timestamp + ".csv";
+        csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
+        System.out.println("CSV file location - " + csvFileLoc);
+        csvLogFile.println(header);
         return csvFileLoc;
     }
 

@@ -34,23 +34,23 @@ public class ScanVM extends TimerTask {
     public void run() {
 
         try {
-            HashMap<Integer, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
-            HashMap<Integer, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
-            HashMap<Integer, ThreadMXBean> threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
-            HashMap<Integer, CompilationMXBean> compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
-            HashMap<Integer, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
-            HashMap<Integer, ArrayList<MemoryPoolMXBean>> memPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
+            HashMap<String, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
+            HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
+            HashMap<String, ThreadMXBean> threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
+            HashMap<String, CompilationMXBean> compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
+            HashMap<String, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
+            HashMap<String, ArrayList<MemoryPoolMXBean>> memPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
 
-            List<VirtualMachineDescriptor> vmDescs = VirtualMachine.list();
+            List<VirtualMachineDescriptor> vmDescriptorList = VirtualMachine.list();
 
             Lock mxBeanStoreLock = MXBeanStore.getMXBeanStoreLock();
             mxBeanStoreLock.lock();
             try {
-                for (VirtualMachineDescriptor vmDesc : vmDescs) {
+                for (VirtualMachineDescriptor vmDesc : vmDescriptorList) {
                     String vmDisplayName = vmDesc.displayName();
                     for (String targetVMDesc : targetVMDescs) {
                         if (vmDisplayName.contains(targetVMDesc) && !vmDisplayName.contains(localVMDesc)) {
-                            Integer vmId = Integer.parseInt(vmDesc.id());
+                            String vmId = vmDesc.id() + "_" + targetVMDesc;
                             if (!memoryMXBeanMap.containsKey(vmId)) {
                                 VirtualMachine vm = VirtualMachine.attach(vmDesc);
                                 String localConnectorAddr = vm.getAgentProperties()

@@ -66,11 +66,11 @@ public class VMDataUtil {
 
     private static String getVmIds() {
         memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
-        Iterator<Entry<Integer, MemoryMXBean>> itrMemoryMXBean = memoryMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, MemoryMXBean>> itrMemoryMXBean = memoryMXBeanMap.entrySet().iterator();
 
         StringBuilder vmIdBuffer = new StringBuilder();
         while (itrMemoryMXBean.hasNext()) {
-            Entry<Integer, MemoryMXBean> tempRow = itrMemoryMXBean.next();
+            Entry<String, MemoryMXBean> tempRow = itrMemoryMXBean.next();
             vmIdBuffer.append(tempRow.getKey()).append(";");
         }
         return (vmIdBuffer.length() == 0) ? null : vmIdBuffer.toString();
@@ -80,12 +80,12 @@ public class VMDataUtil {
         StringBuilder memMXBeanOutput = new StringBuilder();
 
         memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
-        Iterator<Entry<Integer, MemoryMXBean>> itrMemoryMXBean = memoryMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, MemoryMXBean>> itrMemoryMXBean = memoryMXBeanMap.entrySet().iterator();
         
         while (itrMemoryMXBean.hasNext()) {
-            Entry<Integer, MemoryMXBean> tempRow = itrMemoryMXBean.next();
+            Entry<String, MemoryMXBean> tempRow = itrMemoryMXBean.next();
             MemoryMXBean memMXBean = tempRow.getValue();
-            Integer vmId = tempRow.getKey();
+            String vmId = tempRow.getKey();
             try {
 
                 MemoryUsage heapMemUsage = memMXBean.getHeapMemoryUsage();
@@ -116,11 +116,11 @@ public class VMDataUtil {
         StringBuilder classLoadingMXBeanOutput = new StringBuilder();
 
         classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
-        Iterator<Entry<Integer, ClassLoadingMXBean>> itrClassLoadingMXBean = classLoadingMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, ClassLoadingMXBean>> itrClassLoadingMXBean = classLoadingMXBeanMap.entrySet().iterator();
 
         while (itrClassLoadingMXBean.hasNext()) {
-            Entry<Integer, ClassLoadingMXBean> tempRow = itrClassLoadingMXBean.next();
-            Integer vmId = tempRow.getKey();
+            Entry<String, ClassLoadingMXBean> tempRow = itrClassLoadingMXBean.next();
+            String vmId = tempRow.getKey();
             ClassLoadingMXBean classLoadingMXBean = tempRow.getValue();
             try {
                 long currentLoadedClasses = classLoadingMXBean.getLoadedClassCount();
@@ -147,11 +147,11 @@ public class VMDataUtil {
         StringBuilder threadMXBeanOutput = new StringBuilder();
 
         threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
-        Iterator<Entry<Integer, ThreadMXBean>> itrThreadMXBean = threadMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, ThreadMXBean>> itrThreadMXBean = threadMXBeanMap.entrySet().iterator();
 
         while (itrThreadMXBean.hasNext()) {
-            Entry<Integer, ThreadMXBean> tempRow = itrThreadMXBean.next();
-            Integer vmId = tempRow.getKey();
+            Entry<String, ThreadMXBean> tempRow = itrThreadMXBean.next();
+            String vmId = tempRow.getKey();
             ThreadMXBean threadMXBean = tempRow.getValue();
             try {
                 int daemonThreadCount = threadMXBean.getDaemonThreadCount(); // current live daemon threads
@@ -186,11 +186,11 @@ public class VMDataUtil {
         StringBuilder compilationMXBeanOutput = new StringBuilder();
         
         compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
-        Iterator<Entry<Integer, CompilationMXBean>> itrCompilationMXBean = compilationMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, CompilationMXBean>> itrCompilationMXBean = compilationMXBeanMap.entrySet().iterator();
 
         while (itrCompilationMXBean.hasNext()) {
-            Entry<Integer, CompilationMXBean> tempRow = itrCompilationMXBean.next();
-            Integer vmId = tempRow.getKey();
+            Entry<String, CompilationMXBean> tempRow = itrCompilationMXBean.next();
+            String vmId = tempRow.getKey();
             CompilationMXBean compilationMXBean = tempRow.getValue();
             try {
                 long totalCompilationTime = compilationMXBean.getTotalCompilationTime();
@@ -219,12 +219,12 @@ public class VMDataUtil {
         StringBuilder gcMXBeanOutput = new StringBuilder();
         
         gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
-        Iterator<Entry<Integer, ArrayList<GarbageCollectorMXBean>>> itrGCMXBean = gcMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, ArrayList<GarbageCollectorMXBean>>> itrGCMXBean = gcMXBeanMap.entrySet().iterator();
         
         while (itrGCMXBean.hasNext()) {
             gcMXBeanOutput.append(" ");
-            Entry<Integer, ArrayList<GarbageCollectorMXBean>> tempRow = itrGCMXBean.next();
-            Integer vmId = tempRow.getKey();
+            Entry<String, ArrayList<GarbageCollectorMXBean>> tempRow = itrGCMXBean.next();
+            String vmId = tempRow.getKey();
             ArrayList<GarbageCollectorMXBean> gcBeanList = tempRow.getValue();
             int gcFieldCount = gcBeanList.size() * 3;
             try{
@@ -277,12 +277,12 @@ public class VMDataUtil {
         StringBuilder memPoolMXBeanOutput = new StringBuilder();
         
         memoryPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
-        Iterator<Entry<Integer, ArrayList<MemoryPoolMXBean>>> itrMemPoolMXBean = memoryPoolMXBeanMap.entrySet().iterator();
+        Iterator<Entry<String, ArrayList<MemoryPoolMXBean>>> itrMemPoolMXBean = memoryPoolMXBeanMap.entrySet().iterator();
         
         while (itrMemPoolMXBean.hasNext()) {
             memPoolMXBeanOutput.append(" ");
-            Entry<Integer, ArrayList<MemoryPoolMXBean>> tempRow = itrMemPoolMXBean.next();
-            Integer vmId = tempRow.getKey();
+            Entry<String, ArrayList<MemoryPoolMXBean>> tempRow = itrMemPoolMXBean.next();
+            String vmId = tempRow.getKey();
             ArrayList<MemoryPoolMXBean> memPoolBeanList = tempRow.getValue();
             int memPoolFieldCount = memPoolBeanList.size() * 3;
             try {
@@ -336,10 +336,10 @@ public class VMDataUtil {
     }
 
     
-   private static HashMap<Integer, MemoryMXBean> memoryMXBeanMap;
-   private static HashMap<Integer, ClassLoadingMXBean> classLoadingMXBeanMap;
-   private static HashMap<Integer, ThreadMXBean> threadMXBeanMap;
-   private static HashMap<Integer, CompilationMXBean> compilationMXBeanMap; 
-   private static HashMap<Integer, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap;
-   private static HashMap<Integer, ArrayList<MemoryPoolMXBean>> memoryPoolMXBeanMap;  
+   private static HashMap<String, MemoryMXBean> memoryMXBeanMap;
+   private static HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap;
+   private static HashMap<String, ThreadMXBean> threadMXBeanMap;
+   private static HashMap<String, CompilationMXBean> compilationMXBeanMap; 
+   private static HashMap<String, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap;
+   private static HashMap<String, ArrayList<MemoryPoolMXBean>> memoryPoolMXBeanMap;  
 }
