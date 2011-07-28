@@ -19,10 +19,14 @@
         <mkdir dir="${dist.dir}/jvmon/logs" />
         <mkdir dir="${dist.dir}/jvmon/bin" />
         <mkdir dir="${dist.dir}/jvmon/lib" />
+        <mkdir dir="${dist.dir}/jvmon/plotter" />
         
         <move file="${dist.dir}/jvmon.jar" todir="${dist.dir}/jvmon/lib" />
         <copy todir="${dist.dir}/jvmon/bin">
             <fileset dir="scripts"/>
+        </copy>
+        <copy todir="${dist.dir}/jvmon/plotter">
+            <fileset dir="plotter"/>
         </copy>
         <copy overwrite="true" tofile="${dist.dir}/README.TXT" file="readme.txt"/>
         <copy overwrite="true" tofile="${dist.dir}/jvmon/readme.txt" file="readme.txt"/>
