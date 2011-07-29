@@ -1,0 +1,125 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9"> 
+    <!--[if IE]>
+		<script src="js/excanvas.js"></script>
+	<![endif]-->
+	<style type="text/css">
+		div{
+			margin: auto;
+		}
+		select{
+			width: 150px;
+		}
+		.dygraph-label {
+			/* This applies to the title, x-axis label and y-axis label */
+			font-family: Arial, Helvetica, sans-serif;
+		}
+		
+		.dygraph-title {
+			/* This rule only applies to the chart title */
+			font-size: 20px;
+			text-shadow: gray 2px 2px 2px;  /* color, delta-x, delta-y, blur radius */
+		}
+	</style>
+	<script type="text/javascript" src="js/dygraph-combined.js"></script>
+	<script type="text/javascript" src="js/jvmon_plotter.js"></script>
+	<script type="text/javascript" src="data/index.js"></script>
+	<title>jvmon charts</title>
+</head>
+<body>
+	<div style="width:800px; height:150px;text-align:center;">
+		<h1>JVMON PLOTTER </h1></br>
+		<span id="reportsList">
+			<select class="select" onchange="getProcIds(this.value);"></select>
+		</span>
+		<span id="procsList">
+			<select class="select" onchange="plotGraph(this.value);"></select>
+		</span></br></br>
+		<span id="status" style="color:red;"></span>
+	</div><br/><br/>
+	
+	<div  id="memory" style="width:800px; height: 400px"></div><br/>
+	<div  id="memoryLegend" style="width:800px;text-align:center;"></div></br></br></br>
+	
+	<div  id="classes" style="width:800px; height: 400px"></div><br/>
+	<div  id="classesLegend" style="width:800px;text-align:center;"></div></br></br></br>
+		
+	<div  id="threads" style="width:800px; height: 400px"></div>
+	<div  id="threadsLegend" style="width:800px;text-align:center;"></div></br></br></br>
+	
+	<div  id="compilation" style="width:800px; height: 400px"></div><br/>
+	<div  id="compilationLegend" style="width:800px;text-align:center;"></div></br></br></br>
+	
+	<div  id="gc" style="width:800px; height: 400px"></div><br/>
+	<div  id="gcToggle" style="width:800px; height:50px;text-align:center;"></div>
+	<div  id="gcLegend" style="width:800px;text-align:center;"></div></br></br></br>
+	
+	<div  id="memPool" style="width:800px; height: 400px"></div><br/>
+	<div  id="memPoolLegend" style="width:800px;text-align:center;"></div></br></br>
+
+	<script type="text/javascript">	
+		var repPrefix = "<select class=\"select\" style=\"margin:10px;\" onchange=\"getProcIds(this.value);\">";
+		var repSuffix = "</select>"
+		var repDummy = "<option value=\"\">Select a Report..</option>";
+		
+		var part1 = "<option value=\"";
+		var part2 = "\">";
+		var part3 = "</option>";
+		
+		var procPrefix = "<select class=\"select\" style=\"margin:10px;\" onchange=\"plotGraph(this.value);\">";
+		var procDummy = "<option value=\"\">Select a process..</option>";
+		var procFailed = "<option value=\"\">No Processes</option>";
+		var procSuffix = "</select>";
+		
+		var loadedReps ="";
+		function loadJSFile(filename){
+			if(loadedReps.indexOf(filename == -1)){
+				var req = new XMLHttpRequest();
+				req.open('GET', 'data/' + filename, false);
+				req.send(null);
+				if(req.status == 200) {
+					loadedReps += filename;
+					var head = document.getElementsByTagName('HEAD').item(0);
+					var script = document.createElement( "script" );
+					script.language = "javascript";
+					script.type = "text/javascript";
+					script.text = req.responseText;
+					head.appendChild(script);
+					document.getElementById("status").innerHTML = "";
+				} else {
+					document.getElementById("status").innerHTML = "Error - Could not find the report."
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		// starts here
+		// get reports from index
+		var reportsList = new Array();
+		reportsList = getReportList().split(",");
+		var reportsOptions = "";
+		for (index in reportsList){
+			reportsOptions = reportsOptions + part1 + reportsList[index] + part2 + reportsList[index] + part3;
+		}
+		document.getElementById("reportsList").innerHTML = repPrefix + repDummy + reportsOptions + repSuffix;
+		
+		// gets proc_ids from selected report
+		function getProcIds(report){
+			if(loadJSFile(report)){
+				var procIds = new Array();
+				procIds = _getProcList().split(",");
+				var procOptions = "";
+				for (index in procIds){
+					procOptions = procOptions + part1 + procIds[index] + part2 + procIds[index].substring(1) + part3;
+				}	
+				document.getElementById("procsList").innerHTML = procPrefix + procDummy + procOptions + procSuffix;
+			} else {
+				document.getElementById("procsList").innerHTML = procPrefix + procFailed + procSuffix;
+			}
+		}
+	</script>
+</body>
+</html>
