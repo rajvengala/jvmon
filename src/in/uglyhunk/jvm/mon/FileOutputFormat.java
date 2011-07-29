@@ -23,7 +23,8 @@ public class FileOutputFormat implements OutputFormat {
     public static String createCSVFile(String timestamp) throws Exception {
         
         String hostname = InetAddress.getLocalHost().getHostName();
-        csvFileLoc = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + File.separator + hostname + "_jvmon_" + timestamp + ".csv";
+        csvFileLoc = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + 
+                    File.separator + hostname + "_jvmon_" + timestamp + ".csv";
         csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
         System.out.println("CSV file location - " + csvFileLoc);
         csvLogFile.println(header);
@@ -36,6 +37,6 @@ public class FileOutputFormat implements OutputFormat {
                                     "used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)," +
                                     "curr_loaded_classes,tot_loaded_classes,tot_unloaded_classes," + 
                                     "daemon_thrd_count,peak_thrd_count,current_thrd_count,total_started_thrd_count," + 
-                                    "tot_compilation_time,";
+                                    "tot_compilation_time(ms),";
           
 }

@@ -1,6 +1,9 @@
 v1.2.0
 ======
  + supports compilation, garbage collector and memory pool metrics
+ + automatically converts csv data into js format before finishing the  monitoring session
+ + converts csv into js format through command-line option
+ + standalone component "plotter" takes metrics data in js format and create graphs
 
 v1.1.0
 =======

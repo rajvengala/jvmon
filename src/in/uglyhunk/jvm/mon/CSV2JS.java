@@ -181,7 +181,7 @@ public class CSV2JS {
             String procIdMetrics[] = procsToMetricsMap.get(procId).toString().split(";");
                      
             func.append("function _").append(procId).append("Comp() {\nreturn \"\" + \n");
-            func.append("\"timestamp,tot_compilation_time\\n\" + \n");
+            func.append("\"timestamp,tot_compilation_time(ms)\\n\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){
                 String metrics[] = procIdMetrics[line].split(",");
                 func.append("\"").append(metrics[0]).append(",").append(metrics[13]).append("\\n\"");
@@ -210,26 +210,30 @@ public class CSV2JS {
             func.append("function _").append(procId).append("GC() {\nreturn \"\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){ // iterate all the lines for the select proc_id
                 String metrics[] = procIdMetrics[line].split(", "); //  only gc metrics group will be selected
-               
                 String gcMetrics[] = metrics[1].split(",");
                 int i=0;
                 if(line == 0){
                     func.append("\"timestamp,");
                     while(i < gcMetrics.length){
+                        if(i > 0 ){
+                            func.append(",");
+                        }
                         func.append(gcMetrics[i]).append("-collection_count,");
-                        func.append(gcMetrics[i]).append("-collection_time(ms),");
+                        func.append(gcMetrics[i]).append("-collection_time(ms)");
                         i+=3;
                     }
                     func.append("\\n\" + \n");     
-                     i = 0;
                 }
                 String timestamp = metrics[0].split(",")[0];
                 func.append("\"").append(timestamp).append(",");
+                
+                i = 0;
                 while(i < gcMetrics.length){
-                         func.append(gcMetrics[i+1]).append(",").
-                         append(gcMetrics[i+2]).append(",");
-                         i+=3;   
-
+                    if(i > 0){
+                        func.append(",");
+                    }
+                    func.append(gcMetrics[i+1]).append(",").append(gcMetrics[i+2]);
+                    i+=3;   
                 }
                 func.append("\\n\"");
                 
@@ -263,20 +267,24 @@ public class CSV2JS {
                 if(line == 0){
                     func.append("\"timestamp,");
                     while(i < memPoolMetrics.length){
+                        if(i>0){
+                            func.append(",");
+                        }
                         func.append(memPoolMetrics[i]).append("-used_memory(MB),");
-                        func.append(memPoolMetrics[i]).append("-comm_memory(MB),");
+                        func.append(memPoolMetrics[i]).append("-comm_memory(MB)");
                         i+=3;
                     }
                     func.append("\\n\" + \n");     
-                     i = 0;
                 }
                 String timestamp = metrics[0].split(",")[0];
                 func.append("\"").append(timestamp).append(",");
+                i = 0;
                 while(i < memPoolMetrics.length){
-                         func.append(memPoolMetrics[i+1]).append(",").
-                         append(memPoolMetrics[i+2]).append(",");
-                         i+=3;   
-
+                    if(i > 0){
+                        func.append(",");
+                    }
+                    func.append(memPoolMetrics[i+1]).append(",").append(memPoolMetrics[i+2]);
+                    i+=3;   
                 }
                 func.append("\\n\"");
                 
