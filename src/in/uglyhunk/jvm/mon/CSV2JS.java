@@ -6,11 +6,13 @@ package in.uglyhunk.jvm.mon;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,17 +21,17 @@ import java.util.Map.Entry;
 public class CSV2JS {
     
     public static void convert(String csvFilename) throws Exception {
-        Main.logger.fine("Converting CSV file to JS...");
+        logger.info("Converting CSV file to JS...");
         System.out.print("Converting CSV file to JS...");
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
         System.out.println("Done");
-        Main.logger.fine("Conversion done");
+        logger.info("Conversion done");
     }
     
     private static void mapProcsToMetrics() throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader(CSV2JS.csvFilename));
+        BufferedReader br = new BufferedReader(new FileReader(jvmonLogDir + File.separator + CSV2JS.csvFilename));
         br.readLine(); // ignore first line
         while(true){
             String line = br.readLine();
@@ -58,17 +60,21 @@ public class CSV2JS {
         String memPoolFuns = createMemPoolFuns();
                 
         String jsFileName = CSV2JS.csvFilename.replace(".csv", ".js");
-        BufferedWriter bw = new BufferedWriter(new FileWriter(jsFileName));
+        String jsFilePath = documentRoot + File.separator + jsFileName;
+        
+        BufferedWriter bw = new BufferedWriter(new FileWriter(jsFilePath));
         bw.write(procfunList);
         bw.write(memfuncs);
         bw.write(classfuncs);
         bw.write(thrdFuns);
         bw.write(compFuns);
         bw.write(gcFuns);
-        bw.write(memPoolFuns);        
-        
+        bw.write(memPoolFuns);   
         bw.flush();
         bw.close();
+        
+        // update index.js file
+        updateJSIndex(jsFileName, documentRoot + File.separator + "index.js");
     }
     
     private static String createProcListFun(){
@@ -300,8 +306,45 @@ public class CSV2JS {
         }
         return func.toString();
     }  
+    
+    private static void updateJSIndex(String jsReportFileName, String jsIndexFilePath) throws Exception {
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        StringBuilder jsIndexContents = null;
+        try {
+            br = new BufferedReader(new FileReader(jsIndexFilePath));
+            jsIndexContents = new StringBuilder();
+            
+            while(true){
+                String line = br.readLine();
+                if(line != null) {
+                    if(line.contains("return")){
+                        line = line.replace("return", "return \"" + jsReportFileName + ",\" + ");
+                    }
+                    jsIndexContents.append(line).append(newline);
+                } else {
+                    break;
+                }
+            }
+            br.close();
+                                 
+            bw = new BufferedWriter(new FileWriter(jsIndexFilePath));
+            bw.write(jsIndexContents.toString());
+            bw.flush();
+        
+        } finally {
+            if(br != null)
+                br.close();
+            if(bw != null)
+                bw.close();
+        }
+    }
    
     private static String csvFilename;
+    public static String newline = System.getProperty("line.separator");
     private static HashMap<String, StringBuilder> procsToMetricsMap = new HashMap<String, StringBuilder>();
+    private static final String jvmonLogDir = Main.getJVMONLogDir();
+    private static Logger logger = Main.getLogger();
+    private static final String documentRoot = ".." + File.separator + "jvmon-plotter" + File.separator + "data";
 }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RunningJVMs {
 
@@ -25,8 +26,9 @@ public class RunningJVMs {
                 System.out.println("No running JVM instances found" + newline);
             }
         } catch (Exception e) {
-            Main.logger.log(Level.SEVERE, e.toString(), e);
+            logger.log(Level.SEVERE, e.toString(), e);
         }
     }
     public static String newline = System.getProperty("line.separator");
+    private static final Logger logger = Main.getLogger();
 }

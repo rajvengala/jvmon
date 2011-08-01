@@ -27,17 +27,17 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-      
+            // create file and console handler
             createHandlers();
+            
+            // validate arguments
             validateArgs(args);
 
+            // create csv data file
             Date date = new Date();
             String timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(date);
-            String csvFilePath = FileOutputFormat.createCSVFile(timestamp);
+            String csvFileName = FileOutputFormat.createCSVFile(timestamp);
 
-            // initialise VM scanner thread
-            new Timer().schedule(new ScanVM(targetVMDesc), 500, vmScanFrequency);
-            
             // schedule LogRotator to run every 24 hours
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(date);
@@ -45,19 +45,26 @@ public class Main {
             int minOfHour = calendar.get(Calendar.MINUTE);
             long initLogRotatorDelay = ((60 - minOfHour) + ((23 - hourOfDay) * 60)) * 60 * 1000;
             new Timer().scheduleAtFixedRate(new LogRotator(), initLogRotatorDelay, dayInMSec);
-            
             logger.log(Level.FINE, "Next log rotator in {0} msec.", initLogRotatorDelay);
-
+            
+            // initialise VM scanner thread
+            new Timer().schedule(new ScanVM(targetVMDesc), 500, vmScanFrequency);
+            
+            // Keep scanning for JVMs every 5 secs until at least 1 is found
             while (MXBeanStore.getMemoryMXBeanMap().isEmpty()) {
                 logger.log(Level.INFO, "Searching for JVMs...");
+                System.out.println("Searching for JVMs...");
                 Thread.sleep(5000);
             }
-            logger.log(Level.INFO, "Monitoring in progres...");
+            logger.log(Level.INFO, "Monitoring in progress...");
+            System.out.println("Monitoring in progress...");
 
+            // initialize console output if quiet is disabled through arguments
             if (!quietMode) {
                 co = new ConsoleOutputFormat(consoleVMSubSystem);
             }
 
+            // keep reading counters from the attached JVMs until time out
             while (true) {
                 String output = VMDataUtil.getVMInfo();
                 if (output.length() > 1) {
@@ -76,15 +83,16 @@ public class Main {
                 Thread.sleep(updateFrequency);
             }
             
-            // convert csv file to js for graphing
-            CSV2JS.convert(csvFilePath);
+            // convert csv file to js to create graphs
+            CSV2JS.convert(csvFileName);
             
       
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
-                
+             
+        System.out.println("Complete");
         logger.log(Level.INFO, "Complete");
         System.exit(0);
     }
@@ -170,37 +178,35 @@ public class Main {
         
     }
     
-    private static void createHandlers(){
+    private static void createHandlers() throws Exception{
         
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.FINE);
         
         consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.INFO); 
+        consoleHandler.setLevel(Level.SEVERE); 
         logger.addHandler(consoleHandler);
         
-        
-        try{
-            String hostname = InetAddress.getLocalHost().getHostName();
-            String errLogFileDir = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs" + File.separator;
-            fileHandler = new FileHandler(errLogFileDir + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
-            System.out.println("Error log directory - " + errLogFileDir);
-            
-        } catch(Exception e){
-            logger.severe(e.toString());
-            System.exit(1);
-        }
+        String hostname = InetAddress.getLocalHost().getHostName();
+        fileHandler = new FileHandler(jvmonLogDirPath + File.separator + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
+        System.out.println("Error log directory - " + jvmonLogDirPath);
          
-        // set this to FINE in production
         fileHandler.setLevel(Level.FINE);
         fileHandler.setFormatter(new SimpleFormatter());
         logger.addHandler(fileHandler);
-   
+    }
+    
+    public static String getJVMONLogDir(){
+        return jvmonLogDirPath;
+    }
+    
+    public static Logger getLogger(){
+        return logger;
     }
     
     private static ConsoleHandler consoleHandler;
     private static FileHandler fileHandler;
-    public static final Logger logger = Logger.getLogger("in.uglyhunk.jvm.mon");
+    private static final Logger logger = Logger.getLogger("in.uglyhunk.jvm.mon");
     private static boolean quietMode = true; // quiet mode - only to file
     private static int updateFrequency = 5 * 1000; // milliseconds
     private static int updateLimit = 720; // max updates, 1 hour
@@ -213,4 +219,5 @@ public class Main {
     private static final int MAX_BYTES = 500 * 1024; // 500 KB
     private static final int MAX_FILES = 10; // max log file count
     private static String consoleVMSubSystem = "h"; // heap counters by default
+    private static final String jvmonLogDirPath = ".." + File.separator + "logs";
 }

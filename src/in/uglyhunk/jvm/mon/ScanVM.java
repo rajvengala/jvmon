@@ -23,6 +23,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ScanVM extends TimerTask {
 
@@ -121,12 +122,13 @@ public class ScanVM extends TimerTask {
             }
 
         } catch (Exception e) {
-            Main.logger.info("Could not connect to target VM(s). Please check the log file for details");
-            Main.logger.log(Level.FINE, e.toString(), e);
+            System.out.println("Could not connect to target VM(s). Please check the log file for details");
+            logger.log(Level.SEVERE, e.toString(), e);
         }
     
     }
     
     private String targetVMDescs[] = null;
     private String localVMDesc = "in.uglyhunk.jvm.mon.Main";
+    private static final Logger logger = Main.getLogger();
 }
