@@ -251,5 +251,5 @@ public class Main {
     private static String consoleVMSubSystem = "h"; // heap counters by default
     private static final String jvmonLogDirPath = ".." + File.separator + "logs";
     private static String csvFileName;
-     public static String newline = System.getProperty("line.separator");
+    private static String newline = System.getProperty("line.separator");
 }
