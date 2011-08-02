@@ -51,9 +51,9 @@ public class Main {
             new Timer().schedule(new ScanVM(targetVMDesc), 500, vmScanFrequency);
             
             // Keep scanning for JVMs every 5 secs until at least 1 is found
+            System.out.println("Searching for JVMs...");
             while (MXBeanStore.getMemoryMXBeanMap().isEmpty()) {
                 logger.log(Level.INFO, "Searching for JVMs...");
-                System.out.println("Searching for JVMs...");
                 Thread.sleep(5000);
             }
             logger.log(Level.INFO, "Monitoring in progress...");
