@@ -23,7 +23,7 @@ public class RunningJVMs {
                     System.out.println(procId + "\t" + displayName + newline);
                 }
             } else {
-                System.out.println("No running JVM instances found" + newline);
+                logger.log(Level.INFO, "No running JVM instances found{0}", newline);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);

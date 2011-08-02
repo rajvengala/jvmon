@@ -21,12 +21,10 @@ import java.util.logging.Logger;
 public class CSV2JS {
     
     public static void convert(String csvFilename) throws Exception {
-        logger.info("Converting CSV file to JS...");
-        System.out.print("Converting CSV file to JS...");
+        logger.info("Converting CSV data to JS format...");
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
-        System.out.println("Done");
         logger.info("Conversion done");
     }
     
@@ -344,7 +342,7 @@ public class CSV2JS {
     public static String newline = System.getProperty("line.separator");
     private static HashMap<String, StringBuilder> procsToMetricsMap = new HashMap<String, StringBuilder>();
     private static final String jvmonLogDir = Main.getJVMONLogDir();
-    private static Logger logger = Main.getLogger();
+    private static final Logger logger = Main.getLogger();
     private static final String documentRoot = ".." + File.separator + "jvmon-plotter" + File.separator + "data";
 }
 

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.net.InetAddress;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileOutputFormat implements OutputFormat {
 
@@ -25,12 +27,16 @@ public class FileOutputFormat implements OutputFormat {
         String hostname = InetAddress.getLocalHost().getHostName();
         String csvFileName = hostname + "_jvmon_" + timestamp + ".csv";
         String csvFileLoc = Main.getJVMONLogDir() +  File.separator + csvFileName;
+        
         csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
-        System.out.println("CSV file location - " + csvFileLoc);
+        String message = "CSV file location - " + csvFileLoc;
+        logger.log(Level.INFO, message);
+        
         csvLogFile.println(header);
         return csvFileName;
     }
 
+    private static final Logger logger = Main.getLogger();
     private static PrintWriter csvLogFile = null;
     private static String header = "timestamp,proc_id," + 
                                     "used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)," +
