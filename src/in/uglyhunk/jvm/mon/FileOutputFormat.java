@@ -13,31 +13,37 @@ public class FileOutputFormat implements OutputFormat {
     public void writeOutput(String output) throws Exception{
 
         if (LogRotator.getCSVLogFlag()) {
+            csvPrintWriter.close();
             createCSVFile(LogRotator.getNewTimeStamp());
             LogRotator.setCSVLogFlag(false);
+            CSV2JS.convert(csvFileName);
         }
 
         String[] vmCounters = output.split(";");
         for(String countersPerVM : vmCounters)
-            csvLogFile.println(countersPerVM);
+            csvPrintWriter.println(countersPerVM);
     }
 
-    public static String createCSVFile(String timestamp) throws Exception {
+    public static void createCSVFile(String timestamp) throws Exception {
         
         String hostname = InetAddress.getLocalHost().getHostName();
-        String csvFileName = hostname + "_jvmon_" + timestamp + ".csv";
+        csvFileName = hostname + "_jvmon_" + timestamp + ".csv";
         String csvFileLoc = Main.getJVMONLogDir() +  File.separator + csvFileName;
         
-        csvLogFile = new PrintWriter(new FileWriter(csvFileLoc), true);
-        String message = "CSV file location - " + csvFileLoc;
+        csvPrintWriter = new PrintWriter(new FileWriter(csvFileLoc), true);
+        String message = "CSV file name - " + csvFileName;
         logger.log(Level.INFO, message);
         
-        csvLogFile.println(header);
+        csvPrintWriter.println(header);
+    }
+    
+    public static String getCSVFileName(){
         return csvFileName;
     }
 
+    private static String csvFileName;
     private static final Logger logger = Main.getLogger();
-    private static PrintWriter csvLogFile = null;
+    private static PrintWriter csvPrintWriter = null;
     private static String header = "timestamp,proc_id," + 
                                     "used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)," +
                                     "curr_loaded_classes,tot_loaded_classes,tot_unloaded_classes," + 

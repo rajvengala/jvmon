@@ -44,7 +44,7 @@ public class Main {
             // create csv data file
             Date date = new Date();
             String timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(date);
-            csvFileName = FileOutputFormat.createCSVFile(timestamp);
+            FileOutputFormat.createCSVFile(timestamp);
             
             // schedule LogRotator to run every 24 hours
             Calendar calendar = new GregorianCalendar();
@@ -91,15 +91,13 @@ public class Main {
             }
             
             // convert csv file to js to create graphs
-            CSV2JS.convert(csvFileName);
+            // CSV2JS.convert(FileOutputFormat.getCSVFileName());
             
       
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
-             
-        logger.log(Level.INFO, "Complete");
         System.exit(0);
     }
     
@@ -111,7 +109,9 @@ public class Main {
                     logger.info("Shutdown initiated");
         
                      // convert csv file to js to create graphs
-                    CSV2JS.convert(csvFileName);
+                    CSV2JS.convert(FileOutputFormat.getCSVFileName());
+                    
+                    logger.log(Level.INFO, "Complete");
                 } catch (Exception e){
                     logger.log(Level.SEVERE, e.toString(), e);
                 }
@@ -136,7 +136,7 @@ public class Main {
 
         String hostname = InetAddress.getLocalHost().getHostName();
         fileHandler = new FileHandler(jvmonLogDirPath + File.separator + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
-        String message = "Error log directory - " + jvmonLogDirPath;
+        String message = "Log directory - " + jvmonLogDirPath;
         logger.log(Level.INFO, message);
 
         fileHandler.setLevel(Level.FINE);
@@ -250,6 +250,5 @@ public class Main {
     private static final int MAX_FILES = 10; // max log file count
     private static String consoleVMSubSystem = "h"; // heap counters by default
     private static final String jvmonLogDirPath = ".." + File.separator + "logs";
-    private static String csvFileName;
     private static String newline = System.getProperty("line.separator");
 }

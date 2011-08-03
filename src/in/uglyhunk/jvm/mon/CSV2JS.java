@@ -25,7 +25,7 @@ public class CSV2JS {
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
-        logger.info("Conversion done");
+        System.out.println("Conversion done");
     }
     
     private static void mapProcsToMetrics() throws Exception {
