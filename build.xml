@@ -37,7 +37,9 @@
         <copy overwrite="true" tofile="${dist.dir}/jvmon/changelog.txt" file="changelog.txt"/>
         <copy overwrite="true" tofile="${dist.dir}/jvmon/help.txt" file="help.txt"/>
         
-        <zip destfile="${dist.dir}/jvmon120.zip" basedir="${dist.dir}/jvmon" />
+        <zip destfile="${dist.dir}/jvmon.zip"> 
+             <zipfileset dir="${dist.dir}/jvmon" prefix="jvmon" />
+        </zip>
         
     </target>
     
