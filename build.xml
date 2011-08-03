@@ -16,7 +16,6 @@
         <delete dir="${dist.dir}/lib" />
         
         <mkdir dir="${dist.dir}/jvmon" />
-        <mkdir dir="${dist.dir}/jvmon/logs" />
         <mkdir dir="${dist.dir}/jvmon/bin" />
         <mkdir dir="${dist.dir}/jvmon/lib" />
         <mkdir dir="${dist.dir}/jvmon/jvmon-plotter" />

@@ -27,7 +27,7 @@ public class FileOutputFormat implements OutputFormat {
     public static void createCSVFile(String timestamp) throws Exception {
         
         String hostname = InetAddress.getLocalHost().getHostName();
-        csvFileName = hostname + "_jvmon_" + timestamp + ".csv";
+        csvFileName = hostname + "_" + timestamp + ".csv";
         String csvFileLoc = Main.getJVMONLogDir() +  File.separator + csvFileName;
         
         csvPrintWriter = new PrintWriter(new FileWriter(csvFileLoc), true);

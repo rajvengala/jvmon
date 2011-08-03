@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 /**
  *
@@ -21,11 +20,10 @@ import java.util.logging.Logger;
 public class CSV2JS {
     
     public static void convert(String csvFilename) throws Exception {
-        logger.info("Converting CSV data to JS format...");
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
-        System.out.println("Conversion done");
+        System.out.println("CSV to JS conversion done");
     }
     
     private static void mapProcsToMetrics() throws Exception {
@@ -58,7 +56,7 @@ public class CSV2JS {
         String memPoolFuns = createMemPoolFuns();
                 
         String jsFileName = CSV2JS.csvFilename.replace(".csv", ".js");
-        String jsFilePath = documentRoot + File.separator + jsFileName;
+        String jsFilePath = documentRoot + File.separator + "data" + File.separator + jsFileName;
         
         BufferedWriter bw = new BufferedWriter(new FileWriter(jsFilePath));
         bw.write(procfunList);
@@ -72,7 +70,7 @@ public class CSV2JS {
         bw.close();
         
         // update index.js file
-        updateJSIndex(jsFileName, documentRoot + File.separator + "index.js");
+        updateJSIndex(jsFileName, documentRoot + File.separator + "data" + File.separator + "index.js");
     }
     
     private static String createProcListFun(){
@@ -342,7 +340,6 @@ public class CSV2JS {
     public static String newline = System.getProperty("line.separator");
     private static HashMap<String, StringBuilder> procsToMetricsMap = new HashMap<String, StringBuilder>();
     private static final String jvmonLogDir = Main.getJVMONLogDir();
-    private static final Logger logger = Main.getLogger();
-    private static final String documentRoot = ".." + File.separator + "jvmon-plotter" + File.separator + "data";
+    private static final String documentRoot = Main.getDocucmentRoot();
 }
 

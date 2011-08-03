@@ -29,9 +29,12 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            // register shutdown hook
-            registerShutdownHook();
-            logger.fine("Registered Shutdown hook");
+            String jvmonHome = System.getenv("JVMON_HOME");
+            if(jvmonHome == null){
+                System.out.println("JVMON_HOME environment variable is not set");
+                System.exit(1);
+            }
+            jvmonLogDir = new File(jvmonHome + File.separator + "logs");
             
             // create file and console handler
             createHandlers();
@@ -89,11 +92,6 @@ public class Main {
 
                 Thread.sleep(updateFrequency);
             }
-            
-            // convert csv file to js to create graphs
-            // CSV2JS.convert(FileOutputFormat.getCSVFileName());
-            
-      
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
@@ -134,9 +132,12 @@ public class Main {
         });
         logger.addHandler(consoleHandler);
 
+        if(!jvmonLogDir.exists())
+            jvmonLogDir.mkdir();
+        
         String hostname = InetAddress.getLocalHost().getHostName();
-        fileHandler = new FileHandler(jvmonLogDirPath + File.separator + hostname + "_jvmon_err_%g.log", MAX_BYTES, MAX_FILES);
-        String message = "Log directory - " + jvmonLogDirPath;
+        fileHandler = new FileHandler(jvmonLogDir.getPath() + File.separator + hostname + "_err_%g.log", MAX_BYTES, MAX_FILES);
+        String message = "Log directory - " + jvmonLogDir.getPath();
         logger.log(Level.INFO, message);
 
         fileHandler.setLevel(Level.FINE);
@@ -195,6 +196,9 @@ public class Main {
                 vmScanFrequency = arg4 * 1000;
             }
 
+            registerShutdownHook();
+            logger.fine("Registered Shutdown hook");
+            
             return;
         }
 
@@ -227,7 +231,11 @@ public class Main {
     
   
     public static String getJVMONLogDir(){
-        return jvmonLogDirPath;
+        return jvmonLogDir.getPath();
+    }
+    
+    public static String getDocucmentRoot(){
+        return jvmonLogDir + File.separator + ".." + File.separator + "jvmon-plotter";
     }
     
     public static Logger getLogger(){
@@ -249,6 +257,6 @@ public class Main {
     private static final int MAX_BYTES = 500 * 1024; // 500 KB
     private static final int MAX_FILES = 10; // max log file count
     private static String consoleVMSubSystem = "h"; // heap counters by default
-    private static final String jvmonLogDirPath = ".." + File.separator + "logs";
+    private static File jvmonLogDir;
     private static String newline = System.getProperty("line.separator");
 }
