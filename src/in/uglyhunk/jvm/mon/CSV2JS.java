@@ -57,6 +57,7 @@ public class CSV2JS {
                 
         String jsFileName = CSV2JS.csvFilename.replace(".csv", ".js");
         String jsFilePath = documentRoot + File.separator + "data" + File.separator + jsFileName;
+        String indexFilePath = documentRoot + File.separator + "data" + File.separator + "index.js";
         
         BufferedWriter bw = new BufferedWriter(new FileWriter(jsFilePath));
         bw.write(procfunList);
@@ -70,7 +71,7 @@ public class CSV2JS {
         bw.close();
         
         // update index.js file
-        updateJSIndex(jsFileName, documentRoot + File.separator + "data" + File.separator + "index.js");
+        updateJSIndex(jsFileName, indexFilePath);
     }
     
     private static String createProcListFun(){
@@ -272,8 +273,8 @@ public class CSV2JS {
                         if(i>0){
                             func.append(",");
                         }
-                        func.append(memPoolMetrics[i]).append("-used_memory(MB),");
-                        func.append(memPoolMetrics[i]).append("-comm_memory(MB)");
+                        func.append(memPoolMetrics[i]).append("--used_memory(MB),");
+                        func.append(memPoolMetrics[i]).append("--comm_memory(MB)");
                         i+=3;
                     }
                     func.append("\\n\" + \n");     
@@ -323,7 +324,7 @@ public class CSV2JS {
                 }
             }
             br.close();
-                                 
+                                            
             bw = new BufferedWriter(new FileWriter(jsIndexFilePath));
             bw.write(jsIndexContents.toString());
             bw.flush();

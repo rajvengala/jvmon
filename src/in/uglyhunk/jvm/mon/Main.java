@@ -31,7 +31,7 @@ public class Main {
         try {
             String jvmonHome = System.getenv("JVMON_HOME");
             if(jvmonHome == null){
-                System.out.println("JVMON_HOME environment variable is not set");
+                System.out.println("JVMON_HOME system environment variable is not set");
                 System.exit(1);
             }
             jvmonLogDir = new File(jvmonHome + File.separator + "logs");
@@ -46,7 +46,7 @@ public class Main {
 
             // create csv data file
             Date date = new Date();
-            String timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(date);
+            String timestamp = sdf.format(date);
             FileOutputFormat.createCSVFile(timestamp);
             
             // schedule LogRotator to run every 24 hours
@@ -92,6 +92,10 @@ public class Main {
 
                 Thread.sleep(updateFrequency);
             }
+            
+             // convert csv file to js to create graphs
+             CSV2JS.convert(FileOutputFormat.getCSVFileName());
+             
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
@@ -99,24 +103,6 @@ public class Main {
         System.exit(0);
     }
     
-    private static void registerShutdownHook(){
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                try {
-                    logger.info("Shutdown initiated");
-        
-                     // convert csv file to js to create graphs
-                    CSV2JS.convert(FileOutputFormat.getCSVFileName());
-                    
-                    logger.log(Level.INFO, "Complete");
-                } catch (Exception e){
-                    logger.log(Level.SEVERE, e.toString(), e);
-                }
-            }
-        });
-    }
-
     private static void createHandlers() throws Exception{
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.FINE);
@@ -195,9 +181,6 @@ public class Main {
             if (arg4 > 0) {
                 vmScanFrequency = arg4 * 1000;
             }
-
-            registerShutdownHook();
-            logger.fine("Registered Shutdown hook");
             
             return;
         }
@@ -242,6 +225,10 @@ public class Main {
         return logger;
     }
     
+    public static SimpleDateFormat getSimpleDateFormat(){
+        return sdf;
+    }
+    
     private static ConsoleHandler consoleHandler;
     private static FileHandler fileHandler;
     private static final Logger logger = Logger.getLogger("in.uglyhunk.jvm.mon");
@@ -259,4 +246,5 @@ public class Main {
     private static String consoleVMSubSystem = "h"; // heap counters by default
     private static File jvmonLogDir;
     private static String newline = System.getProperty("line.separator");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("ddMMMyyyy_HH_mm_ss");
 }

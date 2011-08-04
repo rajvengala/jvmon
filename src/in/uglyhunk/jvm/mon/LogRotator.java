@@ -5,12 +5,12 @@ import java.util.Date;
 import java.util.TimerTask;
 
 public class LogRotator extends TimerTask {
-
+    
     @Override
     public void run() {
         errLogFlag = true;
         csvLogFlag = true;
-        timestamp = new SimpleDateFormat("dd_MMM_yyyy_HH_mm_ss").format(new Date());
+        timestamp = sdf.format(new Date());
     }
 
     public static boolean getErrLogFlag() {
@@ -35,4 +35,5 @@ public class LogRotator extends TimerTask {
     private static String timestamp;
     private static boolean errLogFlag = false;
     private static boolean csvLogFlag = false;
+    private static SimpleDateFormat sdf = Main.getSimpleDateFormat();
 }

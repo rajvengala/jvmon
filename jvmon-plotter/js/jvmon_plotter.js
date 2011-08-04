@@ -142,9 +142,8 @@ function getMemPoolNames(){
 	var memPoolNames = new Array();
 	for(var i in memPoolColumns){
 		if(i % 2 != 0){
-			var temp = memPoolColumns[i].split("-")[0];
+			var temp = memPoolColumns[i].split("--")[0];
 			memPoolNames.push(temp);
-			//alert(memPoolNames);
 		}
 	}
 	return memPoolNames;
