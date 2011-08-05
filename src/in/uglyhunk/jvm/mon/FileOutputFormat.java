@@ -14,9 +14,9 @@ public class FileOutputFormat implements OutputFormat {
 
         if (LogRotator.getCSVLogFlag()) {
             csvPrintWriter.close();
+            CSV2JS.convert(csvFileName);
             createCSVFile(LogRotator.getNewTimeStamp());
             LogRotator.setCSVLogFlag(false);
-            CSV2JS.convert(csvFileName);
         }
 
         String[] vmCounters = output.split(";");

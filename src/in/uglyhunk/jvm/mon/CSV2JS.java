@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,7 +24,7 @@ public class CSV2JS {
         CSV2JS.csvFilename = csvFilename;
         mapProcsToMetrics();
         createJS();
-        System.out.println("CSV to JS conversion done");
+        logger.info("CSV to JS conversion done");
     }
     
     private static void mapProcsToMetrics() throws Exception {
@@ -31,6 +32,7 @@ public class CSV2JS {
         br.readLine(); // ignore first line
         while(true){
             String line = br.readLine();
+            
             if(line == null){
                 break;
             }
@@ -338,9 +340,10 @@ public class CSV2JS {
     }
    
     private static String csvFilename;
-    public static String newline = System.getProperty("line.separator");
+    private static String newline = System.getProperty("line.separator");
     private static HashMap<String, StringBuilder> procsToMetricsMap = new HashMap<String, StringBuilder>();
     private static final String jvmonLogDir = Main.getJVMONLogDir();
     private static final String documentRoot = Main.getDocucmentRoot();
+    private static final Logger logger = Main.getLogger();
 }
 
