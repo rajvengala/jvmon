@@ -1,71 +1,136 @@
-==========================
-Usage
-==========================
- java -cp .;jvmon.jar;<JDK_HOME>\lib\tools.jar in.uglyhunk.jvm.mon.Main {q|[f|b]} [{frequency} {num_of_updates} {vmdesc1,vmdesc2,vmdesc3..} {vmscan_rate}]
+===============
+1. Introduction
+===============
+	JVMON is a Java Virtual Machine(JVM) platform monitoring tool. 
 
-where,
- q - list the running JVMs
+============
+1.1 Features
+============
+	- gathers metrics about memory pools(heap & non-heap), classes, threads, garbage collectors
+	- no need to configure or enable anything on target JVM which makes it ideal for monitoring production/running JVMs
+	- saves all the collected metrics in csv format and js format
+	- rotates csv files every 24 hours
+	- automatically creates graphs for all the collected metrics using integrated web server component
 
- f - output only to file
+================
+1.2 Requirements
+================
+JVMs
+	Hotspot (32-bit and 64-bit)
+	JRockit (32-bit and 64-bit)
 
- b - output to console and file
+JDK
+	JDK 1.6+
+	JDK 1.6+ equivalent of JRockit
 
- frequency - metrics ready frequency
+========================
+2. Install and Configure
+========================
 
- num_of_updates - number of readings
+1. Download the latest jvmon binary file [https://github.com/downloads/uglyhunk/jvmon/jvmon_5Aug11_2159.zip](https://github.com/downloads/uglyhunk/jvmon/jvmon_5Aug11_2159.zip)
 
- vmdesc1,vmdesc2,... - description of JVM(s) to scan for
+2. Extract it to your local hard drive.
+ e.g.:
+ Windows - **C:\jvmon**
+ Non-Windows - **/usr/local/jvmon**
 
- vmscan_rate - scan frequency for JVMs matching descriptions in arg4
+3. Set JVMON_HOME
+ For Windows, set the system environment variable **JVMON_HOME=C:\jvmon**
+ For Non-Windows, edit **setenv.sh** script in the bin directory of jvmon and assign correct jvmon path to **JVMON_HOME** variable
 
-Examples:
+4. Set JDK_HOME
+Edit **setenv.cmd or setenv.sh** in the bin directory of jvmon and set JDK_HOME to the one that the target JVMs use.
 
- 1. Query JVMs running in the system
-         java .;jvmon.jar;<JDK_HOME>\lib\tools.jar in.uglyhunk.jvm.mon.Main q
 
- 2. Monitor all JVMs with description oracle.oats and jconsole every 15 seconds for an hour while scanning for new JVMs every minute
-         java .;jvmon.jar;<JDK_HOME>\lib\tools.jar in.uglyhunk.jvm.mon.Main f 15 240 oracle.oats,jconsole 60
-		
-==========================		
-Scripts
-==========================
- Scripts are included in the jvmon directory for automated or scheduled execution of jvmon. Edit JDK_HOME, JVMON_DIR and arguments to
- reflect your environment and monitoring needs.
+======================
+3. Directory structure
+======================
 
-==========================
-Special Usage
-==========================
- To monitor JVM instances running as Windows services, use PsExec.exe utility to execute jvmon as system account. Download PsExec.exe from 
- http://technet.microsoft.com/en-us/sysinternals/bb897553 and just add "PsExec.exe -s" before jvmon execution command. Check "monJVMSvcs.cmd"
- and "queryJVMSvcs.cmd" in jvmon directory for usage information.
- 
-==========================
-Field definitions
-==========================
- proc_id	- process id of the JVM instance
+JVMON_HOME\(e.g. - C:\jvmon)
+|
+|__ bin\ - contains all the scripts for monitoring select JVMs, querying running JVMs and converting reports.
+|
+|__ lib\ - jar files for jvmon and Nano Web Server
+|
+|__ jvmon_plotter\ - document root for jvm reports that will be used by nano web server
+|
+|__ logs\- directory for all the logs files and data files created by jvmon and nano web server
 
- usd_hp		- represents the amount of "heap" memory currently used (in MB)
+========
+4. Usage
+========
+
+==============
+4.1 Query JVMs
+==============
+- To find all the running JVMs running in your system, execute the following script
+
+	queryJVMs.cmd
+	./queryJVMs.sh
+
+- To find all the JVMs running as Windows service, execute the following script
  
- com_hp		- represents the amount of "heap" memory (in MB) that is guaranteed to be available for use by the Java virtual machine. 
-		  The amount may change over time (increase or decrease) and will always be greater than or equal to "used heap".
- 
- usd_non-hp	- represents the amount of "non-heap" memory currently used (in MB)
- 
- com_non-hp	- represents the amount of "non-heap" memory (in MB) that is guaranteed to be available for use by the Java virtual machine. 
-		  The amount may change over time (increase or decrease) and will always be greater than or equal to "used non-heap".
- 
- cur_ld_clas	- number of classes that are currently loaded in the Java virtual machine
- 
- tot_ld_clas	- total number of classes that have been loaded since the Java virtual machine has started execution
- 
- tot_uld_clas	- total number of classes unloaded since the Java virtual machine has started execution
- 
- d_thd		- current number of live daemon threads
- 
- pk_thd		- peak live thread count since the Java virtual machine started or peak was reset
- 
- cur_thd	- current number of live threads including both daemon and non-daemon threads
- 
- tot_std_thd	- total number of threads created and also started since the Java virtual machine started.
- 
+	queryJVMSvcs.cmd
+
+From the output, make a note of the description in "Display Name" column for the JVMs to be monitored. This description becomes arg4 in monitoring scripts.
+
+================
+4.2 Monitor JVMs
+================
+
+- To monitor running JVMs, use the following script
+
+	monJVMs.cmd
+	monJVMs.sh
+
+- To monitor JVMs running as Windows service, use the following script
+
+	monJVMSvcs.cmd
+
+Following are the arguments that can be edited to customize JVM monitoring
+
+arg1 - f / b / c
+	f - collected metrics is saved only to csv file
+	b - collected metrics is shown on console in addition to being saved to csv file
+
+	By default, only heap and non-heap metrics will be displayed on console. To customize what to display 
+	on console, add context to 'b' as follows
+
+	b:m - displays memory (heap/non-heap) metrics
+	b:c - displays class metrics
+	b:t - displays thread metrics
+	b:n - displays compilation metrics
+	b:o - displays garbage collector and memory pool (heap & non-heap) metrics	
+
+arg2 - integer - frequency in seconds between each collection
+
+arg3 - integer - total number of collections
+
+arg4 - desc1,desc2,... - VM description string that JVMON search for and monitors if found. Multiple VM description 
+						 strings can be separated by a comma. VM description information is available from 
+						 querying scripts (Refer to section Querying JVMs)
+
+arg5 - integer - frequency in seconds between for each scan for new JVMs matching arg4
+
+=================	
+5. Display graphs
+=================
+
+You can see all the graphs immediately after the monitoring session is completed. Run "Nano Web Server" that comes with jvmon using the following script
+
+	nws.cmd
+	./nws.sh
+
+Note: If the jvmon is killed while monitoring is in progress, csv output has to be manually converted to js format (refer to section Manually convert CSV output to JS format)
+
+===========================================
+6. Manually convert CSV output to JS format
+===========================================
+
+If jvmon is killed while monitoring is in progress, you have to manually convert CSV output file to JS format for the jvmon-plotter to be able display graphs in browser.
+
+- Edit the last argument in csv2js.cmd or csv2js.sh to the CSV file name of the last monitoring session. You can find this in the logs directory or on the console output
+
+- Execute csv2js.cmd or csv2js.sh
+
 
