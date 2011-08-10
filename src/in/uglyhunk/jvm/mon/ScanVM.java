@@ -21,6 +21,7 @@ import com.sun.tools.attach.VirtualMachineDescriptor;
 import java.lang.management.CompilationMXBean;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +36,7 @@ public class ScanVM extends TimerTask {
     public void run() {
 
         try {
+            HashMap<String, OperatingSystemMXBean> osMXBeanMap = MXBeanStore.getOSMXBeanMap();
             HashMap<String, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
             HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
             HashMap<String, ThreadMXBean> threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
@@ -69,6 +71,13 @@ public class ScanVM extends TimerTask {
                                 JMXConnector connector = JMXConnectorFactory.connect(serviceURL);
                                 MBeanServerConnection mbsc = connector.getMBeanServerConnection();
 
+                                // os bean
+                                ObjectName osMXObject = new ObjectName(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME);
+                                OperatingSystemMXBean osMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
+                                        osMXObject.toString(), OperatingSystemMXBean.class);
+                                osMXBeanMap.put(vmId, osMXBean);
+                                
+                                
                                 // memory bean
                                 ObjectName memoryMXObject = new ObjectName(ManagementFactory.MEMORY_MXBEAN_NAME);
                                 MemoryMXBean memoryMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,

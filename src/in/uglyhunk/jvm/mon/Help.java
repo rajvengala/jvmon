@@ -15,11 +15,12 @@ public class Help {
                            "    c - convert jvmon csv report to js format" + newline +
                            "    f - output only to file" + newline +
                            "    b - output to console and file" + newline +
-                           "    jvm_subsystem - m/t/c/g (jvm_subsystem will be ignored if options switch is \"q or f or c\")" + newline +
+                           "    jvm_subsystem - m/t/c/n/h/o (jvm_subsystem will be ignored if options switch is \"q or f or c\")" + newline +
                            "        m - memory (heap + non-heap)" + newline +
                            "        t - threads" + newline +
                            "        c - classes" + newline +
                            "        n - compilation " + newline +
+                           "        h - host " + newline +
                            "        o - garbage collection and memory pools" + newline +
                            "        defaults to memory if console_output is omitted" + newline + newline +
                            " frequency - metrics ready frequency" + newline + newline +

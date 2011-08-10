@@ -45,6 +45,7 @@ public class FileOutputFormat implements OutputFormat {
     private static final Logger logger = Main.getLogger();
     private static PrintWriter csvPrintWriter = null;
     private static String header = "timestamp,proc_id," + 
+                                    "1MinSysLoadAvg," +
                                     "used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)," +
                                     "curr_loaded_classes,tot_loaded_classes,tot_unloaded_classes," + 
                                     "daemon_thrd_count,peak_thrd_count,current_thrd_count,total_started_thrd_count," + 

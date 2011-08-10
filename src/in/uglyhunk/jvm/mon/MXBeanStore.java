@@ -5,6 +5,7 @@ import java.lang.management.CompilationMXBean;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,10 @@ public class MXBeanStore {
 
     public static Lock getMXBeanStoreLock() {
         return mxBeanStoreLock;
+    }
+    
+    public static HashMap<String, OperatingSystemMXBean> getOSMXBeanMap() {
+        return osMXBeanMap;
     }
 
     public static HashMap<String, MemoryMXBean> getMemoryMXBeanMap() {
@@ -41,6 +46,7 @@ public class MXBeanStore {
         return memPoolMXBeanMap;
     }
     
+    private static HashMap<String, OperatingSystemMXBean> osMXBeanMap = new HashMap<String, OperatingSystemMXBean>();
     private static HashMap<String, MemoryMXBean> memoryMXBeanMap = new HashMap<String, MemoryMXBean>();
     private static HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap = new HashMap<String, ClassLoadingMXBean>();
     private static HashMap<String, ThreadMXBean> threadMXBeanMap = new HashMap<String, ThreadMXBean>();

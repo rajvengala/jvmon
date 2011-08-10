@@ -156,7 +156,7 @@ public class Main {
                 if(options[1].length() == 1) {
                     consoleVMSubSystem = options[1];
                 } else {
-                    logger.severe("Invalid argument, console_subsystem should be one of \'m\', \'c\', \'t\', \'n\', \'o\'");
+                    logger.severe("Invalid argument, console_subsystem should be one of \'m\', \'c\', \'t\', \'n\', \'h\', \'o\'");
                     System.exit(0);
                 }
             }
@@ -243,7 +243,7 @@ public class Main {
     private static long dayInMSec = 86400 * 1000;
     private static final int MAX_BYTES = 500 * 1024; // 500 KB
     private static final int MAX_FILES = 10; // max log file count
-    private static String consoleVMSubSystem = "h"; // heap counters by default
+    private static String consoleVMSubSystem = "m"; // heap counters by default
     private static File jvmonLogDir;
     private static String newline = System.getProperty("line.separator");
     private static SimpleDateFormat sdf = new SimpleDateFormat("ddMMMyyyy_HH_mm_ss");

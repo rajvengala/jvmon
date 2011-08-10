@@ -49,22 +49,25 @@ public class CSV2JS {
     }
   
     private static void createJS() throws Exception {
-        String procfunList = createProcListFun();
-        String memfuncs = createMemFuns();
-        String classfuncs = createClassFuns();
+        String procFunList = createProcListFun();
+        String hostFuns = createHostFuns();
+        String memFuncs = createMemFuns();
+        String classFuncs = createClassFuns();
         String thrdFuns = createThrdFuns();
         String compFuns = createCompilationFuns();
         String gcFuns = createGCFuns();
         String memPoolFuns = createMemPoolFuns();
+        
                 
         String jsFileName = CSV2JS.csvFilename.replace(".csv", ".js");
         String jsFilePath = documentRoot + File.separator + "data" + File.separator + jsFileName;
         String indexFilePath = documentRoot + File.separator + "data" + File.separator + "index.js";
         
         BufferedWriter bw = new BufferedWriter(new FileWriter(jsFilePath));
-        bw.write(procfunList);
-        bw.write(memfuncs);
-        bw.write(classfuncs);
+        bw.write(procFunList);
+        bw.write(hostFuns);
+        bw.write(memFuncs);
+        bw.write(classFuncs);
         bw.write(thrdFuns);
         bw.write(compFuns);
         bw.write(gcFuns);
@@ -94,6 +97,33 @@ public class CSV2JS {
         return func.toString();
     }
     
+    private static String createHostFuns(){
+        StringBuilder func = new StringBuilder();
+        Iterator<Entry<String, StringBuilder>> itrProcsToMetricsMap = procsToMetricsMap.entrySet().iterator();
+        while(true){
+            Entry<String, StringBuilder> itr = itrProcsToMetricsMap.next();
+            String procId = itr.getKey();
+            String procIdMetrics[] = procsToMetricsMap.get(procId).toString().split(";");
+            
+            func.append("function _").append(procId).append("Host() {\nreturn \"\" + \n");
+            func.append("\"timestamp,1MinSysLoadAvg\\n\" + \n");
+            
+            for(int line = 0; line < procIdMetrics.length; line++){
+                String metrics[] = procIdMetrics[line].split(",");
+                func.append("\"").append(metrics[0]).append(",").append(metrics[2]).append("\\n\"");
+                if(line == procIdMetrics.length-1){
+                    func.append(";\n}\n\n");
+                } else {
+                    func.append(" + \n");
+                }
+            }
+            if(!itrProcsToMetricsMap.hasNext()) 
+                break;
+            
+        }
+        return func.toString();
+    }
+    
     private static String createMemFuns(){
         StringBuilder func = new StringBuilder();
         Iterator<Entry<String, StringBuilder>> itrProcsToMetricsMap = procsToMetricsMap.entrySet().iterator();
@@ -106,8 +136,8 @@ public class CSV2JS {
             func.append("\"timestamp,used_heap(MB),comm_heap(MB),used_non-heap(MB),comm_non-heap(MB)\\n\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){
                 String metrics[] = procIdMetrics[line].split(",");
-                func.append("\"").append(metrics[0]).append(",").append(metrics[2]).append(",").append(metrics[3]).append(",").
-                                  append(metrics[4]).append(",").append(metrics[5]).append("\\n\"");
+                func.append("\"").append(metrics[0]).append(",").append(metrics[3]).append(",").append(metrics[4]).append(",").
+                                  append(metrics[5]).append(",").append(metrics[6]).append("\\n\"");
                 
                 if(line == procIdMetrics.length-1){
                     func.append(";\n}\n\n");
@@ -133,8 +163,8 @@ public class CSV2JS {
             func.append("\"timestamp,curr_loaded_classes,tot_loaded_classes,tot_unloaded_classes\\n\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){
                 String metrics[] = procIdMetrics[line].split(",");
-                func.append("\"").append(metrics[0]).append(",").append(metrics[6]).append(",").
-                                  append(metrics[7]).append(",").append(metrics[8]).append("\\n\"");
+                func.append("\"").append(metrics[0]).append(",").append(metrics[7]).append(",").
+                                  append(metrics[8]).append(",").append(metrics[9]).append("\\n\"");
                 
                 if(line == procIdMetrics.length-1){
                     func.append(";\n}\n\n");
@@ -160,8 +190,8 @@ public class CSV2JS {
             func.append("\"timestamp,daemon_thrd_count,peak_thrd_count,current_thrd_count,total_started_thrd_count\\n\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){
                 String metrics[] = procIdMetrics[line].split(",");
-                func.append("\"").append(metrics[0]).append(",").append(metrics[9]).append(",").append(metrics[10]).append(",").
-                                  append(metrics[11]).append(",").append(metrics[12]).append("\\n\"");
+                func.append("\"").append(metrics[0]).append(",").append(metrics[10]).append(",").append(metrics[11]).append(",").
+                                  append(metrics[12]).append(",").append(metrics[13]).append("\\n\"");
                 
                 if(line == procIdMetrics.length-1){
                     func.append(";\n}\n\n");
@@ -189,7 +219,7 @@ public class CSV2JS {
             func.append("\"timestamp,tot_compilation_time(ms)\\n\" + \n");
             for(int line = 0; line < procIdMetrics.length; line++){
                 String metrics[] = procIdMetrics[line].split(",");
-                func.append("\"").append(metrics[0]).append(",").append(metrics[13]).append("\\n\"");
+                func.append("\"").append(metrics[0]).append(",").append(metrics[14]).append("\\n\"");
                 
                 if(line == procIdMetrics.length-1){
                     func.append(";\n}\n\n");

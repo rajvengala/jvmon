@@ -6,7 +6,7 @@
 ============
 1.1 Features
 ============
-	- gathers metrics about memory pools(heap & non-heap), classes, threads, garbage collectors
+        - gathers metrics about memory pools(heap & non-heap), classes, threads, garbage collectors, host load avg.
 	- no need to configure or enable anything on target JVM which makes it ideal for monitoring production/running JVMs
 	- saves all the collected metrics in csv format and js format
 	- rotates csv files every 24 hours
@@ -100,6 +100,7 @@ arg1 - f / b / c
 	b:c - displays class metrics
 	b:t - displays thread metrics
 	b:n - displays compilation metrics
+	b:h - display host load average (not JVMs)
 	b:o - displays garbage collector and memory pool (heap & non-heap) metrics	
 
 arg2 - integer - frequency in seconds between each collection

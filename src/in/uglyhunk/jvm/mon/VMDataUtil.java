@@ -6,6 +6,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class VMDataUtil {
             String snapshotTime = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
             String vmIds = getVmIds();
             if (vmIds != null) {
+                String osMXBeanData = osMXBeanUtil();
                 String memMXBeanData = memMXBeanDataUtil();
                 String classLoadingMXBeanData = classLoadingMXBeanDataUtil();
                 String threadMXBeanData = threadMXBeanDataUtil();
@@ -36,6 +38,7 @@ public class VMDataUtil {
                 String memPoolMXBeanData = memPoolMXBeanDataUtil();
                 
                 String[] vmId = vmIds.split(";");
+                String[] osMXBeanDataPerVM = osMXBeanData.split(";");
                 String[] memMXBeanDataPerVM = memMXBeanData.split(";");
                 String[] classLoadingMXBeanDataPerVM = classLoadingMXBeanData.split(";");
                 String[] threadMXBeanDataPerVM = threadMXBeanData.split(";");
@@ -48,6 +51,7 @@ public class VMDataUtil {
                 while (vmCount < vmId.length) {
                     outputBuilder.append(snapshotTime).append(",")
                             .append(vmId[vmCount]).append(",")
+                            .append(osMXBeanDataPerVM[vmCount]).append(",")
                             .append(memMXBeanDataPerVM[vmCount]).append(",")
                             .append(classLoadingMXBeanDataPerVM[vmCount]).append(",")
                             .append(threadMXBeanDataPerVM[vmCount]).append(",")
@@ -75,6 +79,29 @@ public class VMDataUtil {
             vmIdBuffer.append(tempRow.getKey()).append(";");
         }
         return (vmIdBuffer.length() == 0) ? null : vmIdBuffer.toString();
+    }
+    
+    private static String osMXBeanUtil(){
+        StringBuilder osMXBeanOutput = new StringBuilder();
+        osMXBeanMap = MXBeanStore.getOSMXBeanMap();
+        Iterator<Entry<String, OperatingSystemMXBean>> itrOSMXBean = osMXBeanMap.entrySet().iterator();
+        
+        while(itrOSMXBean.hasNext()){
+            Entry<String, OperatingSystemMXBean> tempRow = itrOSMXBean.next();
+            OperatingSystemMXBean osMXBean = tempRow.getValue();
+            String vmId = tempRow.getKey();
+            try {
+                double lastMinLdAvg = osMXBean.getSystemLoadAverage();
+                osMXBeanOutput.append(lastMinLdAvg).append(";");
+            } catch(Exception e){
+                osMXBeanOutput.append("0;");
+                itrOSMXBean.remove();
+                logger.log(Level.FINE, e.toString(), e);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading operating system MX Beans", vmId);
+            }
+        }
+        
+        return (osMXBeanOutput.length() == 0) ? null : osMXBeanOutput.toString();
     }
 
     private static String memMXBeanDataUtil() {
@@ -106,8 +133,11 @@ public class VMDataUtil {
             } catch (Exception e) {
                 memMXBeanOutput.append("0,0,0,0;");
                 itrMemoryMXBean.remove();
+                if(osMXBeanMap.containsKey(vmId)){
+                    osMXBeanMap.remove(vmId);
+                }
                 logger.log(Level.FINE, e.toString(), e);
-                logger.log(Level.FINE, "VM with proc_id{0} is dead while reading memory MX Beans", vmId);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading memory MX Beans", vmId);
             }
         }
         return (memMXBeanOutput.length() == 0) ? null : memMXBeanOutput.toString();
@@ -134,11 +164,15 @@ public class VMDataUtil {
             } catch (Exception e) {
                 classLoadingMXBeanOutput.append("0,0,0;");
                 itrClassLoadingMXBean.remove();
+                if(osMXBeanMap.containsKey(vmId)){
+                    osMXBeanMap.remove(vmId);
+                }
                 if(memoryMXBeanMap.containsKey(vmId)){
                     memoryMXBeanMap.remove(vmId);
                 }
+                
                 logger.log(Level.FINE, e.toString(), e);
-                logger.log(Level.FINE, "VM with proc_id{0} is dead while reading classLoading MX Beans", vmId);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading classLoading MX Beans", vmId);
             }
         }
         return (classLoadingMXBeanOutput.length() == 0) ? null : classLoadingMXBeanOutput.toString();
@@ -168,7 +202,9 @@ public class VMDataUtil {
             } catch (Exception e) {
                 threadMXBeanOutput.append("0,0,0,0;");
                 itrThreadMXBean.remove();
-                
+                if(osMXBeanMap.containsKey(vmId)){
+                    osMXBeanMap.remove(vmId);
+                }
                 if(memoryMXBeanMap.containsKey(vmId)){
                     memoryMXBeanMap.remove(vmId);
                 }
@@ -177,7 +213,7 @@ public class VMDataUtil {
                 }
                 
                 logger.log(Level.FINE, e.toString(), e);
-                logger.log(Level.FINE, "VM with proc_id{0} is dead while reading thread MX Beans", vmId);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading thread MX Beans", vmId);
             }
         }
         return (threadMXBeanOutput.length() == 0 ? null : threadMXBeanOutput.toString());
@@ -199,7 +235,9 @@ public class VMDataUtil {
             } catch(Exception e){
                 compilationMXBeanOutput.append("0;");
                 itrCompilationMXBean.remove();
-                
+                if(osMXBeanMap.containsKey(vmId)){
+                    osMXBeanMap.remove(vmId);
+                }
                 if(memoryMXBeanMap.containsKey(vmId)){
                     memoryMXBeanMap.remove(vmId);
                 }
@@ -210,7 +248,7 @@ public class VMDataUtil {
                     threadMXBeanMap.remove(vmId);
                 }
                 logger.log(Level.FINE, e.toString(), e);
-                logger.log(Level.FINE, "VM with proc_id{0} is dead while reading compilation MX Beans", vmId);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading compilation MX Beans", vmId);
             }
         }
         return (compilationMXBeanOutput.length() == 0 ? null : compilationMXBeanOutput.toString());
@@ -252,7 +290,9 @@ public class VMDataUtil {
                 }
                 gcMXBeanOutput.append(";");
                 itrGCMXBean.remove();
-                
+                if(osMXBeanMap.containsKey(vmId)){
+                    osMXBeanMap.remove(vmId);
+                }
                 if(memoryMXBeanMap.containsKey(vmId)){
                     memoryMXBeanMap.remove(vmId);
                 }
@@ -267,7 +307,7 @@ public class VMDataUtil {
                 }
                 
                 logger.log(Level.FINE, e.toString(), e);
-                logger.log(Level.FINE, "VM with proc_id{0} is dead while reading GC MX Beans", vmId);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading GC MX Beans", vmId);
             }
         }
         
@@ -312,7 +352,9 @@ public class VMDataUtil {
                 memPoolMXBeanOutput.append(";");
                 
                 itrMemPoolMXBean.remove();
-                
+                if(osMXBeanMap.containsKey(vmId)){
+                    osMXBeanMap.remove(vmId);
+                }
                 
                 if(memoryMXBeanMap.containsKey(vmId)){
                     memoryMXBeanMap.remove(vmId);
@@ -330,13 +372,13 @@ public class VMDataUtil {
                     gcMXBeanMap.remove(vmId);
                 }
                 logger.log(Level.FINE, e.toString(), e);
-                logger.log(Level.FINE, "VM with proc_id{0} is dead while reading MemoryPool MX Beans", vmId);
+                logger.log(Level.FINE, "VM with proc_id {0} is dead while reading MemoryPool MX Beans", vmId);
             }
         }
         return (memPoolMXBeanOutput.length() == 0 ? null : memPoolMXBeanOutput.toString());
     }
 
-    
+   private static HashMap<String, OperatingSystemMXBean> osMXBeanMap; 
    private static HashMap<String, MemoryMXBean> memoryMXBeanMap;
    private static HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap;
    private static HashMap<String, ThreadMXBean> threadMXBeanMap;

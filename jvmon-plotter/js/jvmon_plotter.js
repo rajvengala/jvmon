@@ -6,13 +6,13 @@ var chartFuncNames;
 function plotGraph(procId){	
     gProcId = procId;
     var procIdDisplayName = procId.substring(1);
-    var chartDivId = ["memory", "classes", "threads", "compilation", "gc", "memPool"];
-    chartFuncNames = ["Mem", "Class", "Thrd", "Comp", "GC", "MemPool"];
-    var legendLabels = ["memoryLegend", "classesLegend", "threadsLegend", "compilationLegend", "gcLegend", "memPoolLegend"];
-    var titles = [procIdDisplayName + " - Memory", procIdDisplayName + " - Classes", procIdDisplayName + " - Threads", procIdDisplayName + " - Compilation", procIdDisplayName + " - Garbage Collectors",                 procIdDisplayName + " - Memory Pool"];
+    var chartDivId = ["memory", "host", "classes", "threads", "compilation", "gc", "memPool"];
+    chartFuncNames = ["Mem", "Host", "Class", "Thrd", "Comp", "GC", "MemPool"];
+    var legendLabels = ["memoryLegend", "hostLegend", "classesLegend", "threadsLegend", "compilationLegend", "gcLegend", "memPoolLegend"];
+    var titles = [procIdDisplayName + " - Memory", procIdDisplayName + " - Host", procIdDisplayName + " - Classes", procIdDisplayName + " - Threads", procIdDisplayName + " - Compilation", procIdDisplayName + " - Garbage Collectors",                 procIdDisplayName + " - Memory Pool"];
 	
     for(var index in chartDivId){
-        if(index < 4) {
+        if(index < 5) {
             g = new Dygraph(
                 document.getElementById(chartDivId[index]),
                 eval(procId + chartFuncNames[index]),
@@ -39,10 +39,10 @@ function plotGraph(procId){
 	
     // draw Garbage Collector Graph
     gcGraph = new Dygraph(
-                document.getElementById(chartDivId[4]),
-                eval(procId + chartFuncNames[4]),
+                document.getElementById(chartDivId[5]),
+                eval(procId + chartFuncNames[5]),
                 {
-                    "title" : titles[4],
+                    "title" : titles[5],
 
                     "xlabel" : "Time",
                     "xAxisLabelWidth" : 65,
@@ -55,7 +55,7 @@ function plotGraph(procId){
                     "fillGraph" : false,
                     "highlightCircleSize" : 3,
 
-                    "labelsDiv": legendLabels[4],
+                    "labelsDiv": legendLabels[5],
                     "labelsSeparateLines" : true,
 
                     "rollPeriod": 1,
@@ -66,10 +66,10 @@ function plotGraph(procId){
 	
     // draw Memory Pool Graph
     memPoolGraph = new Dygraph(
-					document.getElementById(chartDivId[5]),
-					eval(procId + chartFuncNames[5]),
+					document.getElementById(chartDivId[6]),
+					eval(procId + chartFuncNames[6]),
 					{
-						"title" : titles[5],
+						"title" : titles[6],
 
 						"xlabel" : "Time",
 						"xAxisLabelWidth" : 65,
@@ -82,7 +82,7 @@ function plotGraph(procId){
 						"fillGraph" : false,
 						"highlightCircleSize" : 3,
 
-						"labelsDiv": legendLabels[5],
+						"labelsDiv": legendLabels[6],
 						"labelsSeparateLines" : true,
 
 						"rollPeriod": 1,
@@ -94,7 +94,7 @@ function plotGraph(procId){
 			
 	
 function gcColumnChooser(col1, col2){
-	var gcColumnsLine = eval(gProcId + chartFuncNames[4] + "()").split("\n")[0];
+	var gcColumnsLine = eval(gProcId + chartFuncNames[5] + "()").split("\n")[0];
 	var gcColumns = gcColumnsLine.split(",");
 	var gcColumnVisibility = new Array();
 	for(var index in gcColumns){
@@ -123,7 +123,7 @@ function updateGCGraph(checkboxStatus){
 		
 var memPoolColumns;
 function memPoolColumnVisibility(){
-	var memPoolColumnsLine = eval(gProcId + chartFuncNames[5] + "()").split("\n")[0];
+	var memPoolColumnsLine = eval(gProcId + chartFuncNames[6] + "()").split("\n")[0];
 	memPoolColumns = memPoolColumnsLine.split(",");
 	var memPoolColumnVisibility = new Array();
 	for(var index in memPoolColumns){
