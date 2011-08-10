@@ -1,3 +1,11 @@
+v1.2.2
+======
+ + collects system load average (not host) on non-windows hosts
+
+v1.2.1
+======
+ + includes integrated web server (nano web server) to server graphs
+
 v1.2.0
 ======
  + supports compilation, garbage collector and memory pool metrics
