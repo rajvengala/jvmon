@@ -18,41 +18,77 @@ public class MXBeanStore {
         return mxBeanStoreLock;
     }
     
-    public static HashMap<String, OperatingSystemMXBean> getOSMXBeanMap() {
-        return osMXBeanMap;
+    public OperatingSystemMXBean getOSMXBean() {
+        return osMXBean;
+    }
+    
+    public void setOSMXBean(OperatingSystemMXBean _osMXBean){
+        osMXBean = _osMXBean;
     }
 
-    public static HashMap<String, MemoryMXBean> getMemoryMXBeanMap() {
-        return memoryMXBeanMap;
+    public MemoryMXBean getMemoryMXBean() {
+        return memoryMXBean;
+    }
+    
+    public void setMemoryMXBean(MemoryMXBean _memoryMXBean){
+        memoryMXBean = _memoryMXBean;
     }
 
-    public static HashMap<String, ClassLoadingMXBean> getClassLoadingMXBeanMap() {
-        return classLoadingMXBeanMap;
-    }
-
-    public static HashMap<String, ThreadMXBean> getThreadMXBeanMap() {
-        return threadMXBeanMap;
+    public ClassLoadingMXBean getClassLoadingMXBean() {
+        return classLoadingMXBean;
     }
     
-    public static HashMap<String, CompilationMXBean> getCompilationMXBeanMap() {
-        return compilationMXBeanMap;
+    public void setClassLoadingMXBean(ClassLoadingMXBean _classLoadingMXBean) {
+        classLoadingMXBean = _classLoadingMXBean;
     }
     
-    public static HashMap<String, ArrayList<GarbageCollectorMXBean>> getGCMXBeanMap() {
-        return gcMXBeanMap;
+    
+    public ThreadMXBean getThreadMXBean() {
+        return threadMXBean;
     }
     
-    public static HashMap<String, ArrayList<MemoryPoolMXBean>> getMemPoolMXBeanMap() {
-        return memPoolMXBeanMap;
+    public void setThreadMXBean(ThreadMXBean _threadMXBean) {
+        threadMXBean = _threadMXBean;
     }
     
-    private static HashMap<String, OperatingSystemMXBean> osMXBeanMap = new HashMap<String, OperatingSystemMXBean>();
-    private static HashMap<String, MemoryMXBean> memoryMXBeanMap = new HashMap<String, MemoryMXBean>();
-    private static HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap = new HashMap<String, ClassLoadingMXBean>();
-    private static HashMap<String, ThreadMXBean> threadMXBeanMap = new HashMap<String, ThreadMXBean>();
-    private static HashMap<String, CompilationMXBean> compilationMXBeanMap = new HashMap<String, CompilationMXBean>();
-    private static HashMap<String, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap = new HashMap<String, ArrayList<GarbageCollectorMXBean>>();
-    private static HashMap<String, ArrayList<MemoryPoolMXBean>> memPoolMXBeanMap = new HashMap<String, ArrayList<MemoryPoolMXBean>>();
     
+    public CompilationMXBean getCompilationMXBean() {
+        return compilationMXBean;
+    }
+    
+    public void setCompilationMXBean(CompilationMXBean _compilationMXBean) {
+        compilationMXBean = _compilationMXBean;
+    }
+    
+    
+    public ArrayList<GarbageCollectorMXBean> getGCMXBean() {
+        return gcMXBean;
+    }
+    
+    public void setGCMXBean(ArrayList<GarbageCollectorMXBean> _gcMXBean) {
+        gcMXBean = _gcMXBean;
+    }
+    
+    public ArrayList<MemoryPoolMXBean> getMemPoolMXBean() {
+        return memPoolMXBean;
+    }
+    
+    public void setMemPoolMXBean(ArrayList<MemoryPoolMXBean> _memPoolMXBean) {
+        memPoolMXBean = _memPoolMXBean;
+    }
+    
+    public static HashMap<String, MXBeanStore> getMXBeanStoreObjectMap(){
+        return mxBeanStoreObjectMap;
+    }
+       
+    private OperatingSystemMXBean osMXBean;
+    private MemoryMXBean memoryMXBean;
+    private ClassLoadingMXBean classLoadingMXBean;
+    private ThreadMXBean threadMXBean;
+    private CompilationMXBean compilationMXBean;
+    private ArrayList<GarbageCollectorMXBean> gcMXBean = new ArrayList<GarbageCollectorMXBean>();
+    private ArrayList<MemoryPoolMXBean> memPoolMXBean = new ArrayList<MemoryPoolMXBean>();
+    
+    private static HashMap<String, MXBeanStore> mxBeanStoreObjectMap = new HashMap<String, MXBeanStore>();
     private static Lock mxBeanStoreLock = new ReentrantLock();
 }

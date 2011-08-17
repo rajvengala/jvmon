@@ -36,28 +36,41 @@ public class ScanVM extends TimerTask {
     public void run() {
 
         try {
-            HashMap<String, OperatingSystemMXBean> osMXBeanMap = MXBeanStore.getOSMXBeanMap();
-            HashMap<String, MemoryMXBean> memoryMXBeanMap = MXBeanStore.getMemoryMXBeanMap();
-            HashMap<String, ClassLoadingMXBean> classLoadingMXBeanMap = MXBeanStore.getClassLoadingMXBeanMap();
-            HashMap<String, ThreadMXBean> threadMXBeanMap = MXBeanStore.getThreadMXBeanMap();
-            HashMap<String, CompilationMXBean> compilationMXBeanMap = MXBeanStore.getCompilationMXBeanMap();
-            HashMap<String, ArrayList<GarbageCollectorMXBean>> gcMXBeanMap = MXBeanStore.getGCMXBeanMap();
-            HashMap<String, ArrayList<MemoryPoolMXBean>> memPoolMXBeanMap = MXBeanStore.getMemPoolMXBeanMap();
-
-            List<VirtualMachineDescriptor> vmDescriptorList = VirtualMachine.list();
-
+            
+            // lock MXBeanStoreObjectMap while scanning for new JVMs
+            // as the main thread uses the same map to read 
+            // existing JVMs in the map
             Lock mxBeanStoreLock = MXBeanStore.getMXBeanStoreLock();
             mxBeanStoreLock.lock();
+            
+            HashMap<String, MXBeanStore> mxBeanStoreObjectMap = MXBeanStore.getMXBeanStoreObjectMap();
+            
+            // get the list of running JVMs
+            List<VirtualMachineDescriptor> vmDescriptorList = VirtualMachine.list();
             try {
+                // for each target VM, check if the description 
+                // string matches the description of the running VM
+                // the user wants to monitor
                 for (VirtualMachineDescriptor vmDesc : vmDescriptorList) {
+
                     String vmDisplayName = vmDesc.displayName();
+                    
                     for (String targetVMDesc : targetVMDescs) {
+                        
                         if (vmDisplayName.contains(targetVMDesc) && !vmDisplayName.contains(localVMDesc)) {
+                            // for matcing JVM, create an VM id by appending proc_id with 
+                            // JVM description string the user entered
                             String vmId = vmDesc.id() + "_" + targetVMDesc;
-                            if (!memoryMXBeanMap.containsKey(vmId)) {
+                            
+                            // if the JVM is not in the MXBeanStoreObjectMap
+                            // add it to the map and attach to the JVM
+                            // and start MBean Server
+                            if (!mxBeanStoreObjectMap.containsKey(vmId)) {
+                                MXBeanStore mxBeanStore = new MXBeanStore();
                                 VirtualMachine vm = VirtualMachine.attach(vmDesc);
                                 String localConnectorAddr = vm.getAgentProperties()
                                                             .getProperty("com.sun.management.jmxremote.localConnectorAddress");
+                                
                                 if (localConnectorAddr == null) {
                                     String javaHome = vm.getSystemProperties().getProperty("java.home");
                                     String agentJar = javaHome + File.separator + "lib" + File.separator + "management-agent.jar";
@@ -75,32 +88,32 @@ public class ScanVM extends TimerTask {
                                 ObjectName osMXObject = new ObjectName(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME);
                                 OperatingSystemMXBean osMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         osMXObject.toString(), OperatingSystemMXBean.class);
-                                osMXBeanMap.put(vmId, osMXBean);
+                                mxBeanStore.setOSMXBean(osMXBean);
                                 
                                 
                                 // memory bean
                                 ObjectName memoryMXObject = new ObjectName(ManagementFactory.MEMORY_MXBEAN_NAME);
                                 MemoryMXBean memoryMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         memoryMXObject.toString(), MemoryMXBean.class);
-                                memoryMXBeanMap.put(vmId, memoryMXBean);
+                                mxBeanStore.setMemoryMXBean(memoryMXBean);
                                 
                                 // class bean
                                 ObjectName classLoadingMXObject = new ObjectName(ManagementFactory.CLASS_LOADING_MXBEAN_NAME);
                                 ClassLoadingMXBean classLoadingMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         classLoadingMXObject.toString(), ClassLoadingMXBean.class);
-                                classLoadingMXBeanMap.put(vmId, classLoadingMXBean);
+                                mxBeanStore.setClassLoadingMXBean(classLoadingMXBean);
 
                                 // thread bean
                                 ObjectName threadMXObject = new ObjectName(ManagementFactory.THREAD_MXBEAN_NAME);
                                 ThreadMXBean threadMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc,
                                         threadMXObject.toString(), ThreadMXBean.class);
-                                threadMXBeanMap.put(vmId, threadMXBean);
+                                mxBeanStore.setThreadMXBean(threadMXBean);
                                 
                                 // compilation bean
                                 ObjectName compilationMXObject = new ObjectName(ManagementFactory.COMPILATION_MXBEAN_NAME);
                                 CompilationMXBean compilationMXBean = ManagementFactory.newPlatformMXBeanProxy(mbsc, 
                                          compilationMXObject.toString(), CompilationMXBean.class);
-                                compilationMXBeanMap.put(vmId, compilationMXBean);
+                                mxBeanStore.setCompilationMXBean(compilationMXBean);
                                 
                                 // gc bean
                                 ObjectName gcObjectNames = new ObjectName(ManagementFactory.GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE + ",*");
@@ -110,7 +123,7 @@ public class ScanVM extends TimerTask {
                                                             mbsc, gcMXObject.getCanonicalName(), GarbageCollectorMXBean.class); 
                                         gcMXBeanList.add(gcMXBean);
                                 }
-                                gcMXBeanMap.put(vmId, gcMXBeanList);
+                                mxBeanStore.setGCMXBean(gcMXBeanList);
                                 
                                 // memory pool bean
                                 ArrayList<MemoryPoolMXBean> memPoolMXBeanList = new ArrayList<MemoryPoolMXBean>();
@@ -121,7 +134,10 @@ public class ScanVM extends TimerTask {
                                 
                                     memPoolMXBeanList.add(memPoolMXBean);
                                 }
-                                memPoolMXBeanMap.put(vmId, memPoolMXBeanList);
+                                mxBeanStore.setMemPoolMXBean(memPoolMXBeanList);
+                                
+                                // add the mxBeanStore object to the map
+                                mxBeanStoreObjectMap.put(vmId, mxBeanStore);
                             }
                         }
                     }

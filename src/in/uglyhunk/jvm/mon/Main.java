@@ -63,7 +63,7 @@ public class Main {
             
             // Keep scanning for JVMs every 5 secs until at least 1 is found
             logger.log(Level.INFO, "Searching for JVMs...");
-            while (MXBeanStore.getMemoryMXBeanMap().isEmpty()) {
+            while (MXBeanStore.getMXBeanStoreObjectMap().isEmpty()) {
                 Thread.sleep(5000);
             }
             logger.log(Level.INFO, "Monitoring in progress...");
