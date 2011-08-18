@@ -147,8 +147,7 @@ public class ScanVM extends TimerTask {
             }
 
         } catch (Exception e) {
-            System.out.println("Could not connect to target VM(s). Please check the log file for details");
-            logger.log(Level.SEVERE, e.toString(), e);
+            logger.log(Level.WARNING, e.toString(), e);
         }
     
     }
